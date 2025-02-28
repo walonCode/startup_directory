@@ -71,3 +71,22 @@ export const deleteStartup = async (req, res) => {
     res.status(500).json({ message: "Error deleting startup"});
   }
 };
+
+export const updateStartup = async (req, res) => {
+  try{
+    const { id } = req.params
+    const updates = req.body;
+
+    const startup = await Startup.findById({_id:id})
+    if(!startup){
+      return res.status(404).json({message: 'Startup not found'});
+    }
+
+    const updateStartup = await Startup.findByIdAndUpdate({_id:id},{$set:updates},{new:true, runValidators:true});
+
+    return res.status(200).json({message: "Startup updated successfully",updateStartup});
+  }catch(error){
+    console.error(error)
+    return res.status(500).json({message: 'Internal srver error'})
+  }
+}

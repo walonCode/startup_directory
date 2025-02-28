@@ -4,12 +4,18 @@ import { connectDB } from './configs/connectDB.js'
 import cors from 'cors'
 import { corsOptions } from './configs/corsOptions.js'
 import startupRouter from './routes/startupRouter.js'
+import { reviewRouter } from './routes/reviewRouter.js'
 
 
 //for the .env file to be used in the project
 config()
 
+//initializing the app with express
 const app = express()
+
+//connecting to the database
+await connectDB()
+
 
 //middleware
 app.use(cors(corsOptions))
@@ -17,6 +23,8 @@ app.use(express.json())
 
 //api for get,post,put,and delete for the startup
 app.use('/api/startup',startupRouter)
+//api for get,post,patch and delete for reviews
+app.use('/api/reviews',reviewRouter)
 
 
 app.listen(process.env.PORT,() => {

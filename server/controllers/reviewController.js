@@ -13,7 +13,7 @@ export const createReview = async(req,res) => {
             return res.status(400).json({message: "All fields required"})
         }
         const newReview = new Review({
-            startup:startupId,
+            startupId,
             user,
             comment,
             rating

@@ -14,7 +14,7 @@ config()
 const app = express()
 
 //connecting to the database
-await connectDB()
+connectDB()
 
 
 //middleware

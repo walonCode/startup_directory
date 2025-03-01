@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { FaBuilding, FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhone, FaRegClock, FaServicestack } from "react-icons/fa";
+import { useAppDispatch } from "../../hooks/storeHooks";
+import { postStartups } from "../../store/features/startupSlice";
+import { useNavigate } from "react-router-dom";
 
 const CreateStartup = () => {
   const [name, setName] = useState('');
@@ -11,7 +14,10 @@ const CreateStartup = () => {
   const [operatingHours, setOperatingHours] = useState('');
   const [website, setWebsite] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate()
+
+  const dispatch = useAppDispatch()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Here you can process the form data
@@ -26,9 +32,8 @@ const CreateStartup = () => {
       website
     };
 
-    console.log(formData); // This logs the form data, replace with actual submit logic
-
-    // Reset form fields after submission
+    await dispatch(postStartups(formData))
+    navigate('/view')
     setName('');
     setDescription('');
     setServices('');
@@ -40,7 +45,8 @@ const CreateStartup = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-10 border border-gray-300">
+    <section className="min-h-screen mt-10 ">
+    <div className="max-w-lg mx-auto p-6  bg-white shadow-lg rounded-lg mt-10 border border-gray-300">
       <h2 className="text-2xl font-bold text-green-600 text-center mb-4">Create a Startup</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         
@@ -156,6 +162,7 @@ const CreateStartup = () => {
         </button>
       </form>
     </div>
+    </section>
   );
 };
 

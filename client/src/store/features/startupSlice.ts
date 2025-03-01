@@ -2,9 +2,10 @@ import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import axios from "axios";
 
-const BASE_URL = 'http://localhost/3000/api/startup'
+const BASE_URL = 'http://localhost:3000/api/startup'
 
 interface Startup {
+    _id?:string;
     name: string;
     description: string;
     services: string;
@@ -13,7 +14,7 @@ interface Startup {
     address: string;
     operatingHours: string;
     website: string;
-    review:Reviews[]
+    review?:Reviews[]
 }
 
 interface Reviews {
@@ -23,14 +24,14 @@ interface Reviews {
     user:string
 }
 
-export const fetchStartups = createAsyncThunk<Startup[]>('startups/fetchStartups',async() => {
+export const fetchStartups = createAsyncThunk('startups/fetchStartups',async() => {
     const response = await axios.get(BASE_URL)
-    return response.data
+    return (await response.data) as Startup[]
 })
 
-export const postStartups = createAsyncThunk<Startup[]>('startup/postStartup', async(initialStartup) => {
+export const postStartups = createAsyncThunk('startup/postStartup', async(initialStartup:Startup) => {
     const response = await axios.post(BASE_URL,initialStartup)
-    return response.data
+    return (await response.data) as Startup
 })
 
 // Define initial state with correct types
@@ -63,7 +64,7 @@ const startupSlice = createSlice({
             state.error = action.error.message ?? 'something went wrong'
         })
         .addCase(postStartups.fulfilled, (state,action) => {
-            state.startup = action.payload;
+            state.startup.push(action.payload);
         })
     }
 })

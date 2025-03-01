@@ -35,12 +35,12 @@ export const createStartup = async (req, res) => {
         return res.status(400).json({message: 'All field required'});
     }
 
-    const startup = Startup.findOne({name});
+    const startup = await Startup.findOne({ name });
     if(startup){
-        res.status(401).json({message: "Startup already exist"})
+      return res.status(401).json({message: "Startup already exist"})
     }
 
-    const newStartup  = new Startup({
+    const newStartup  =  new Startup({
         name,
         description,
         services,

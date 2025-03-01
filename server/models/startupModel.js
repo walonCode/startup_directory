@@ -9,6 +9,9 @@ const startupSchema = new Schema({
     address: {type:String, required:true},
     email: {type:String, required:true},
     website: {type:String, required:true},
+    social:[{
+        type:String,
+    }],
     reviews: [{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Review"

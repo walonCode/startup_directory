@@ -3,6 +3,7 @@ import axios from "axios";
 import { RootState } from "../store";
 
 interface Reviews {
+    _id?:string
     startupId:string | undefined
     rating: number;
     comment: string;
@@ -17,15 +18,15 @@ interface ReviewState {
     error: string | null;
 }
 
-export const fetchReview = createAsyncThunk('startups/fetchReview',async(id:string | undefined) => {
-    const response = await axios.get(`${BASE_URL}/${id}`)
-    return (await response.data) as Reviews[]
+export const fetchReview = createAsyncThunk('startups/fetchReview',async() => {
+    const response = await axios.get(BASE_URL)
+    return response.data.reviews as Reviews[]
 })
 
 export const postReview = createAsyncThunk('startup/postReview', async(initialReview:Reviews) => {
     const { startupId } = initialReview
     const response = await axios.post(`${BASE_URL}/${startupId}`,initialReview)
-    return (await response.data) as Reviews
+    return response.data.newReview as Reviews
 })
 
 const initialState:ReviewState = {
@@ -51,17 +52,17 @@ const reviewSlice = createSlice({
             state.error = action.error.message ?? 'something went wrong'
         })
         .addCase(postReview.fulfilled, (state,action) => {
-            state.review.push(action.payload)
+            state.review = [action.payload, ...state.review]
         })
     }
 })
 
 
-export const allReview = (state:RootState) => state.review.review
+export const allReview = (state:RootState) => state.review.review || []
 export const getReviewStatus = (state:RootState) => state.review.status; 
 export const getReviewError = (state:RootState) => state.review.error ;
 
-//getting a review by startupId
-export const getReviewByStartupId = (state:RootState, id:string | undefined) => state.review.review.filter(review => review.startupId === id);
+export const selectReviewsByStartupId = (state: RootState, id: string | undefined) =>state.review.review.filter((review) => review.startupId === id);
+
 
 export default reviewSlice.reducer

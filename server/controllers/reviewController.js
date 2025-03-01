@@ -80,3 +80,15 @@ export const updateReview = async(req,res) => {
         return res.status(500).json({message: "Server error"})
     }
 }
+
+export const getAllReview = async(req,res) => {
+    try{
+        const reviews = await Review.find({})
+        if(reviews.length === 0 ){
+            return res.status(200).json({message: 'Review is empty'})
+        }
+        return res.status(200).json({reviews})
+    }catch(error){
+        console.error(error);
+    }
+}

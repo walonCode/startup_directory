@@ -16,22 +16,22 @@ interface Startup {
 
 const StartupCard = ({ startup }: { startup: Startup }) => {
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-xl">
+    <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-xl max-w-md w-full mx-auto">
       <div className="p-6">
-        {/* Name */}
-        <div className="flex items-center space-x-2 mb-4">
-          <FaBuilding className="text-green-600 text-xl" />
-          <h3 className="text-2xl font-bold text-gray-800">{startup.name}</h3>
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <FaBuilding className="text-green-600 text-xl" />
+            <h3 className="text-2xl font-bold text-gray-800">{startup.name}</h3>
+          </div>
+          {/* Service Bubble */}
+          <div className="bg-green-600 text-white px-4 py-2 rounded-full text-xs flex items-center justify-center">
+            <p>{startup.services}</p>
+          </div>
         </div>
 
         {/* Description */}
         <p className="text-gray-600 text-sm mb-4">{startup.description}</p>
-
-        {/* Services */}
-        <div className="mb-4">
-          <h4 className="font-semibold text-gray-800">Services:</h4>
-          <p className="text-gray-700 text-sm">{startup.services}</p>
-        </div>
 
         {/* Contact Information */}
         <div className="space-y-2 text-gray-700">
@@ -50,12 +50,12 @@ const StartupCard = ({ startup }: { startup: Startup }) => {
         </div>
 
         {/* Website & More Details */}
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between flex-wrap">
           <a
             href={startup.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-600 font-semibold hover:underline flex items-center"
+            className="text-green-600 font-semibold hover:underline flex items-center mb-2 sm:mb-0"
           >
             <FaGlobe className="mr-2" />
             Visit Website

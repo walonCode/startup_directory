@@ -1,7 +1,9 @@
-import { FaHome,  FaPlusCircle, FaInfoCircle,FaBars } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaHome,  FaPlusCircle,FaBars } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <nav className="bg-black text-white shadow-md sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between ">
@@ -17,18 +19,26 @@ const Navbar = () => {
           <Link to="startup" className="hover:text-green-600">
             <FaPlusCircle className="inline-block mr-2" /> Create
           </Link>
-          <Link to='/view' className="hover:text-green-600">
-            <FaInfoCircle className="inline-block mr-2" /> View
-          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <div className="md:hidden">
-          <button className="text-white focus:outline-none">
+          <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none">
             <FaBars />
           </button>
         </div>
       </div>
+      {isOpen && (
+          <div className="flex flex-col items-start gap-1 px-6 mx-auto  md:hidden 
+         space-x-6 text-lg">
+          <Link to="/" className="hover:text-green-600">
+            <FaHome className="inline-block mr-2" /> Home
+          </Link>
+          <Link to="startup" className="hover:text-green-600 mb-3">
+            <FaPlusCircle className="inline-block mr-2" /> Create
+          </Link>
+        </div>
+      )}
     </nav>
   );
 };

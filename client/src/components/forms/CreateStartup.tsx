@@ -14,13 +14,13 @@ const CreateStartup = () => {
   const [operatingHours, setOperatingHours] = useState('');
   const [website, setWebsite] = useState('');
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Here you can process the form data
     const formData = {
       name,
       description,
@@ -29,11 +29,11 @@ const CreateStartup = () => {
       contact,
       address,
       operatingHours,
-      website
+      website,
     };
 
-    await dispatch(postStartups(formData))
-    navigate('/view')
+    await dispatch(postStartups(formData));
+    navigate('/');
     setName('');
     setDescription('');
     setServices('');
@@ -45,123 +45,124 @@ const CreateStartup = () => {
   };
 
   return (
-    <section className="min-h-screen mt-10 ">
-    <div className="max-w-lg mx-auto p-6  bg-white shadow-lg rounded-lg mt-10 border border-gray-300">
-      <h2 className="text-2xl font-bold text-green-600 text-center mb-4">Create a Startup</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
-        {/* Name */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaBuilding className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Startup Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+    <section className="min-h-screen flex justify-center items-center mt-10 px-4">
+      <div className="max-w-xl w-full p-6 bg-white shadow-md rounded-lg border border-gray-200">
+        <h2 className="text-3xl font-semibold text-green-600 text-center mb-6">Create a Startup</h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          
+          {/* Name */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaBuilding className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Startup Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Description */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaBuilding className="text-green-600 mr-2" />
-          <textarea
-            placeholder="Brief Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full outline-none"
-            required
-          ></textarea>
-        </div>
+          {/* Description */}
+          <div className="flex items-start border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaBuilding className="text-green-600 text-lg mr-3" />
+            <textarea
+              placeholder="Brief Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full outline-none text-sm resize-none"
+              rows={3}
+              required
+            ></textarea>
+          </div>
 
-        {/* Services */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaServicestack className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Services Offered"
-            value={services}
-            onChange={(e) => setServices(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Services */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaServicestack className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Services Offered"
+              value={services}
+              onChange={(e) => setServices(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Email */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaEnvelope className="text-green-600 mr-2" />
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Email */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaEnvelope className="text-green-600 text-lg mr-3" />
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Contact */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaPhone className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Contact Number"
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Contact */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaPhone className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Contact Number"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Address */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaMapMarkerAlt className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Business Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Address */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaMapMarkerAlt className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Business Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Operating Hours */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaRegClock className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Operating Hours (e.g. 9 AM - 5 PM)"
-            value={operatingHours}
-            onChange={(e) => setOperatingHours(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Operating Hours */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaRegClock className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Operating Hours (e.g. 9 AM - 5 PM)"
+              value={operatingHours}
+              onChange={(e) => setOperatingHours(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Website */}
-        <div className="flex items-center border border-gray-300 p-2 rounded-md">
-          <FaGlobe className="text-green-600 mr-2" />
-          <input
-            type="text"
-            placeholder="Website URL"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            className="w-full outline-none"
-            required
-          />
-        </div>
+          {/* Website */}
+          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
+            <FaGlobe className="text-green-600 text-lg mr-3" />
+            <input
+              type="text"
+              placeholder="Website URL"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              className="w-full outline-none text-sm"
+              required
+            />
+          </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
-        >
-          Create Startup
-        </button>
-      </form>
-    </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition ease-in-out duration-300"
+          >
+            Create Startup
+          </button>
+        </form>
+      </div>
     </section>
   );
 };

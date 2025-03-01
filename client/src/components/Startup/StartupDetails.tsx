@@ -1,53 +1,60 @@
-import { useAppSelector,useAppDispatch } from "../../hooks/storeHooks";
+import { useAppSelector, useAppDispatch } from "../../hooks/storeHooks";
 import { selectStartupById } from "../../store/features/startupSlice";
 import { useParams } from "react-router-dom";
-import { useState,useEffect } from "react";
-import { 
-  FaBuilding, FaEnvelope, FaGlobe, FaMapMarkerAlt, 
-  FaPhone, FaRegClock, FaServicestack, FaStar, FaPlusCircle 
+import { useState, useEffect } from "react";
+import {
+  FaBuilding, FaEnvelope, FaGlobe, FaMapMarkerAlt,
+  FaPhone, FaRegClock, FaServicestack, FaStar, FaPlusCircle
 } from "react-icons/fa";
-import { postReview,fetchReview } from "../../store/features/reviewSlice";
+import { postReview, fetchReview, selectReviewsByStartupId } from "../../store/features/reviewSlice";
 import ReviewCard from "../reviews/ReviewCard";
-import { getReviewByStartupId } from "../../store/features/reviewSlice";
 
 export default function StartupDetails() {
-  const { id } = useParams();
-  const startup = useAppSelector((state) => selectStartupById(state, id));
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
 
-  //modal review form data
-  const [name, setName] = useState("")
-  const [comment, setComment] = useState("")
-  const [rating, setRating] = useState("")
-  const dispatch = useAppDispatch()
-  const reviews = useAppSelector((state) => getReviewByStartupId(state,id))
+  // Fetch startup details
+  const startup = useAppSelector((state) => selectStartupById(state, id));
+
+  // Fetch reviews
+  const reviews = useAppSelector((state) => selectReviewsByStartupId(state, id)) || [];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState("");
 
   useEffect(() => {
-    dispatch(fetchReview(id))
-  },[dispatch,id])
+    dispatch(fetchReview());
+  }, [dispatch]);
 
-  const onSumbit = async(e:React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    try{
-      const data = {
-        startupId:id,
-        user:name,
-        comment,
-        rating:Number(rating)
-      }
-      await dispatch(postReview(data))
-      setIsModalOpen(!isModalOpen)
-      setComment("")
-      setName("")
-      setRating("")
-    }catch(error){
-      console.error(error)
-      setIsModalOpen(!isModalOpen)
-      setComment("")
-      setName("")
-      setRating("")
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!id || !name || !comment || !rating) {
+      alert("Please fill in all fields");
+      return;
     }
-  }
+
+    try {
+      const data = {
+        startupId: id,
+        user: name,
+        comment,
+        rating: Number(rating),
+      };
+      await dispatch(postReview(data)).unwrap();
+      
+      // Reset form fields
+      setName("");
+      setComment("");
+      setRating("");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      setIsModalOpen(false);
+    }
+  };
 
   if (!startup) {
     return (
@@ -96,7 +103,7 @@ export default function StartupDetails() {
         </div>
         <div className="flex items-center">
           <FaGlobe className="text-green-600 mr-2" />
-          <a href={startup.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{startup.website}</a>
+          <a href={`https://www.${startup.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{startup.website}</a>
         </div>
       </div>
 
@@ -106,14 +113,18 @@ export default function StartupDetails() {
           <h3 className="text-xl font-semibold text-gray-900 flex items-center">
             <FaStar className="text-yellow-500 mr-2" /> Reviews
           </h3>
-          <button 
+          <button
             onClick={() => setIsModalOpen(true)}
             className="bg-green-600 text-white px-4 py-2 rounded-md flex items-center hover:bg-green-700 transition"
           >
             <FaPlusCircle className="mr-2" /> Add Review
           </button>
         </div>
-        <ReviewCard reviews={reviews}/>
+        {Array.isArray(reviews) && reviews.filter(review => review.startupId === id).map(mapReview => (
+          <div className="flex flex-col gap-2 space-y-2">
+            <ReviewCard key={mapReview._id} review={mapReview}/>
+          </div>
+        ))}
       </div>
 
       {/* Review Form Modal */}
@@ -121,24 +132,28 @@ export default function StartupDetails() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h3 className="text-xl font-semibold mb-4">Add a Review</h3>
-            <form className="space-y-4" onSubmit={onSumbit}>
+            <form className="space-y-4" onSubmit={onSubmit}>
               {/* Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Your Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
                   placeholder="Enter your name"
                   value={name}
-                  onChange={(e)=>setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
               {/* Rating */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Rating</label>
-                <select value={rating} onChange={(e) => setRating(e.target.value)} className="mt-1 block w-full  border-gray-300 rounded-md shadow-sm p-2">
-                  <option>Choose a value</option>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value)}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                >
+                  <option value="">Choose a value</option>
                   <option value="5">⭐⭐⭐⭐⭐ - Excellent</option>
                   <option value="4">⭐⭐⭐⭐ - Very Good</option>
                   <option value="3">⭐⭐⭐ - Good</option>
@@ -150,7 +165,7 @@ export default function StartupDetails() {
               {/* Comment */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Your Review</label>
-                <textarea 
+                <textarea
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
                   rows={4}
                   placeholder="Write your review here..."
@@ -161,15 +176,15 @@ export default function StartupDetails() {
 
               {/* Submit Button */}
               <div className="flex justify-end space-x-2">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                 >
                   Submit Review

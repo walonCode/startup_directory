@@ -9,7 +9,7 @@ interface Reviews {
     user:string
 }
 
-const BASE_URL = 'http://localhost:3000/api/review'
+const BASE_URL = 'http://localhost:3000/api/reviews'
 
 interface ReviewState {
     review: Reviews[];
@@ -17,12 +17,12 @@ interface ReviewState {
     error: string | null;
 }
 
-export const fetchReview = createAsyncThunk('startups/fetchStartups',async(id:string) => {
+export const fetchReview = createAsyncThunk('startups/fetchReview',async(id:string | undefined) => {
     const response = await axios.get(`${BASE_URL}/${id}`)
     return (await response.data) as Reviews[]
 })
 
-export const postReview = createAsyncThunk('startup/postStartup', async(initialReview:Reviews) => {
+export const postReview = createAsyncThunk('startup/postReview', async(initialReview:Reviews) => {
     const { startupId } = initialReview
     const response = await axios.post(`${BASE_URL}/${startupId}`,initialReview)
     return (await response.data) as Reviews
@@ -61,5 +61,7 @@ export const allReview = (state:RootState) => state.review.review
 export const getReviewStatus = (state:RootState) => state.review.status; 
 export const getReviewError = (state:RootState) => state.review.error ;
 
+//getting a review by startupId
+export const getReviewByStartupId = (state:RootState, id:string | undefined) => state.review.review.filter(review => review.startupId === id);
 
 export default reviewSlice.reducer

@@ -34,6 +34,8 @@ export const postStartups = createAsyncThunk('startup/postStartup', async(initia
     return (await response.data) as Startup
 })
 
+
+
 // Define initial state with correct types
 interface StartupState {
     startup: Startup[];
@@ -66,6 +68,7 @@ const startupSlice = createSlice({
         .addCase(postStartups.fulfilled, (state,action) => {
             state.startup.push(action.payload);
         })
+        
     }
 })
 
@@ -73,5 +76,8 @@ const startupSlice = createSlice({
 export const allStartup = (state:RootState) => state.startup.startup
 export const getStartupStatus = (state:RootState) => state.startup.status; 
 export const getStartupError = (state:RootState) => state.startup.error ;
+
+//sending an indiviual startup
+export const selectStartupById = (state:RootState, id:string | undefined) => state.startup.startup.find(startup => startup._id === id)
 
 export default startupSlice.reducer

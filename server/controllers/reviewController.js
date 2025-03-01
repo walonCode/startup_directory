@@ -30,7 +30,7 @@ export const createReview = async(req,res) => {
     }
 }
 
-export const getReview = async() => {
+export const getReview = async(req,res) => {
     try{
         const { startupId } = req.params
         const startup = await Startup.findOne({_id:startupId})
@@ -48,7 +48,7 @@ export const getReview = async() => {
     }
 }
 
-export const deleteReview = async() => {
+export const deleteReview = async(req,res) => {
     try{
         const { id } = req.params
         const review = await Review.findByIdAndDelete({_id:id})
@@ -62,7 +62,7 @@ export const deleteReview = async() => {
     }
 }
 
-export const updateReview = async(res,req) => {
+export const updateReview = async(req,res) => {
     try{
         const { id } = req.params
         const updates = req.body

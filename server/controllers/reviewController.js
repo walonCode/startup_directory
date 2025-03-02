@@ -30,7 +30,7 @@ export const createReview = async(req,res) => {
     }
 }
 
-export const getReview = async(req,res) => {
+export const getReviewById = async(req,res) => {
     try{
         const { startupId } = req.params
         const startup = await Startup.findOne({_id:startupId})
@@ -55,7 +55,7 @@ export const deleteReview = async(req,res) => {
         if(!review){
             return res.status(400).json({message:'Review not found'})
         }
-        return res.status(200).json({message: 'review deleted'})
+        return res.status(200).json({message: 'review deleted', id })
     }catch(error){
         console.error(error)
         return res.status(500).json({message:'Server error'})

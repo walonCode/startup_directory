@@ -8,7 +8,7 @@ const Navbar = () => {
     <nav className="bg-black text-white shadow-md sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between ">
         {/* Logo */}
-        <div className="text-2xl font-bold text-green-600"><Link to='/'>Startup Directory</Link></div>
+        <div className="text-2xl font-bold text-green-600"><Link to='/'> Freetown Startup </Link></div>
 
         {/* Links */}
         <div className="hidden md:flex items-center

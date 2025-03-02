@@ -5,7 +5,10 @@ import cors from 'cors'
 import { corsOptions } from './configs/corsOptions.js'
 import startupRouter from './routes/startupRouter.js'
 import { reviewRouter } from './routes/reviewRouter.js'
+import { insertStartups } from './controllers/startupController.js'
 
+
+  
 
 //for the .env file to be used in the project
 config()
@@ -16,6 +19,8 @@ const app = express()
 //connecting to the database
 connectDB()
 
+//when u first run the server uncomment this function to populate your database with this data in the data.js file in the data directory
+// insertStartups()
 
 //middleware
 app.use(cors(corsOptions))

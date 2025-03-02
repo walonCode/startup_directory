@@ -11,7 +11,6 @@ interface Startup {
   address: string;
   website: string;
   operatingHours: string;
-  reviews?: [];
 }
 
 const StartupCard = ({ startup }: { startup: Startup }) => {

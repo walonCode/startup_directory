@@ -1,4 +1,5 @@
 import Startup from "../models/startupModel.js";
+import { startups } from "../data/data.js";
 
 
 export const getAllStartups = async (req, res) => {
@@ -90,3 +91,16 @@ export const updateStartup = async (req, res) => {
     return res.status(500).json({message: 'Internal srver error'})
   }
 }
+
+
+// use this function to load all the data in the db.js file into your mongodb data base
+
+export const insertStartups = async () => {
+  try {
+    await Startup.insertMany(startups); // Insert all startups at once
+    console.log("Startups added to MongoDB");
+  } catch (error) {
+    console.error("Error inserting startups:", error);
+  }
+};
+  

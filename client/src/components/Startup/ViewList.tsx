@@ -1,15 +1,11 @@
-import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
-import { fetchStartups, allStartup } from "../../store/features/startupSlice";
-import { useEffect } from "react";
+import { useAppSelector } from "../../hooks/storeHooks";
+import { allStartup } from "../../store/features/startupSlice";
 import StartupCard from "./StartupCard";
 
 export default function ViewList() {
-  const dispatch = useAppDispatch();
   const startups = useAppSelector(allStartup);
 
-  useEffect(() => {
-    dispatch(fetchStartups());
-  }, [dispatch]);
+ 
 
   return (
     <div className="max-w-6xl mx-auto p-6">

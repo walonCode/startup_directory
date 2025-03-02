@@ -1,12 +1,12 @@
 import { useAppSelector, useAppDispatch } from "../../hooks/storeHooks";
 import { selectStartupById } from "../../store/features/startupSlice";
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   FaBuilding, FaEnvelope, FaGlobe, FaMapMarkerAlt,
   FaPhone, FaRegClock, FaServicestack, FaStar, FaPlusCircle
 } from "react-icons/fa";
-import { postReview, fetchReview, selectReviewsByStartupId } from "../../store/features/reviewSlice";
+import { postReview, selectReviewsByStartupId } from "../../store/features/reviewSlice";
 import ReviewCard from "../reviews/ReviewCard";
 
 export default function StartupDetails() {
@@ -24,9 +24,7 @@ export default function StartupDetails() {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState("");
 
-  useEffect(() => {
-    dispatch(fetchReview());
-  }, [dispatch]);
+
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +63,7 @@ export default function StartupDetails() {
   }
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
+    <div className="min-h-screen mb-4 mt-2 flex flex-col items-center justify-center">
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10 border border-gray-200">
       {/* Header */}
       <div className="flex items-center space-x-4 mb-6">

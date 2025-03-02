@@ -1,4 +1,5 @@
 import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -9,16 +10,10 @@ const Footer = () => {
           <h3 className="font-bold text-xl">Quick Links</h3>
           <ul className='flex gap-4 '>
             <li>
-              <a href="#home" className="hover:text-green-600">Home</a>
+              <Link to="/" className="hover:text-green-600">Home</Link>
             </li>
             <li>
-              <a href="#search" className="hover:text-green-600">Search</a>
-            </li>
-            <li>
-              <a href="#about" className="hover:text-green-600">About</a>
-            </li>
-            <li>
-              <a href="#contact" className="hover:text-green-600">Contact</a>
+              <Link to="startup" className="hover:text-green-600">Create</Link>
             </li>
           </ul>
         </div>

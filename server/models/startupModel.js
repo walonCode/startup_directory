@@ -6,7 +6,7 @@ const startupSchema = new Schema({
     services: { 
         type:String, 
         required:true,
-        enum : ['E_COMMERCE','BLOCKCHAIN','SOFTWARE_DEVELOPMENT','FOOD','TECHNOLOGY','HEALTHTECH','FINTECH','AR_VR','AI_ML','CLOUD_COMPUTING','BIOTECHNOLOGY','CYBERSECURITY','MEDICAL_DEVICES','MENTAL_HEALTH','HEALTHCARE']
+        enum : ['E_COMMERCE','BLOCKCHAIN','SOFTWARE_DEVELOPMENT','FOOD','TECHNOLOGY','HEALTHTECH','FINTECH','AR_VR','AI_ML','CLOUD_COMPUTING','BIOTECHNOLOGY','CYBERSECURITY','MEDICAL_DEVICES','MENTAL_HEALTH','HEALTHCARE','CROWD_FUNDING']
     },
     contact: { type: String, required: true },
     operatingHours: {type:String, required:true},

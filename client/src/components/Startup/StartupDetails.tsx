@@ -58,14 +58,15 @@ export default function StartupDetails() {
 
   if (!startup) {
     return (
-      <section className="flex items-center justify-center h-screen">
+      <section className="flex items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold text-red-600">Startup doesn't exist</h2>
       </section>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10 border border-gray-200">
+    <div className="h-screen flex flex-col items-center justify-center">
+      <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10 border border-gray-200">
       {/* Header */}
       <div className="flex items-center space-x-4 mb-6">
         <FaBuilding className="text-green-600 text-4xl" />
@@ -194,6 +195,7 @@ export default function StartupDetails() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

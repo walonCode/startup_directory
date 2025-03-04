@@ -24,6 +24,10 @@ interface Reviews {
     user:string
 }
 
+interface DeleteStartup {
+    _id:string
+}
+
 export const fetchStartups = createAsyncThunk('startups/fetchStartups',async() => {
     const response = await axios.get(BASE_URL)
     return (await response.data) as Startup[]
@@ -34,7 +38,16 @@ export const postStartups = createAsyncThunk('startup/postStartup', async(initia
     return (await response.data) as Startup
 })
 
+export const updateStartup = createAsyncThunk('startups/updateStartup',async(initialStartup:Startup) => {
+    const { _id } = initialStartup;
+    const response = await axios.patch(`${BASE_URL}/${_id}`, initialStartup)
+    return (await response.data) as Startup
+})
 
+export const deleteStartup = createAsyncThunk('startup/deletetSartup', async(id:string) => {
+    const response = await axios.delete(`${BASE_URL}/${id}`)
+    return (await response.data) as DeleteStartup
+})
 
 // Define initial state with correct types
 interface StartupState {
@@ -66,7 +79,18 @@ const startupSlice = createSlice({
             state.error = action.error.message ?? 'something went wrong'
         })
         .addCase(postStartups.fulfilled, (state,action) => {
+            state.status = 'succeeded'
             state.startup.push(action.payload);
+        })
+        .addCase(updateStartup.fulfilled, (state,action) => {
+            state.status = 'succeeded';
+            state.startup.push(action.payload)
+        })
+        .addCase(deleteStartup.fulfilled, (state,action) => {
+            state.status = "succeeded";
+            const { _id } = action.payload
+            const newStartup = state.startup.filter(startup => startup._id !==_id);
+            state.startup = newStartup;
         })
         
     }

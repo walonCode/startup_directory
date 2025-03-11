@@ -2,7 +2,7 @@ import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import axios from "axios";
 
-const BASE_URL = 'http://localhost:3000/api/startup'
+const BASE_URL = 'http://localhost:3005/api/startup'
 
 interface Startup {
     _id?:string;

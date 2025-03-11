@@ -10,7 +10,7 @@ interface Reviews {
     user:string
 }
 
-const BASE_URL = 'http://localhost:3000/api/reviews'
+const BASE_URL = 'http://localhost:3005/api/reviews'
 
 interface ReviewState {
     review: Reviews[];

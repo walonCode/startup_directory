@@ -1,213 +1,426 @@
-import { useState } from "react";
-import {
-  FaBuilding,
-  FaEnvelope,
-  FaGlobe,
-  FaMapMarkerAlt,
-  FaPhone,
-  FaRegClock,
-  FaServicestack,
-} from "react-icons/fa";
-import { useAppDispatch } from "../../hooks/storeHooks";
-import { postStartups } from "../../store/features/startupSlice";
-import { useNavigate } from "react-router-dom";
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useAppDispatch } from "../../hooks/storeHooks"
+import { postStartups } from "../../store/features/startupSlice"
+import { useNavigate } from "react-router-dom"
+import { Building, Mail, Globe, MapPin, Phone, Clock, Briefcase, ArrowLeft, Loader2, CheckCircle } from "lucide-react"
+import { Button } from "../ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Input } from "../ui/input"
+import { Textarea } from "../ui/textarea"
+import { Label } from "../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Alert, AlertDescription } from "../ui/alert"
+import { Separator } from "../ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+
+// Define service categories with their display names
+const SERVICE_CATEGORIES = [
+  { value: "CROWD_FUNDING", label: "Crowd Funding" },
+  { value: "AI_ML", label: "AI/ML" },
+  { value: "AR_VR", label: "AR/VR" },
+  { value: "HEALTHCARE", label: "Healthcare" },
+  { value: "E_COMMERCE", label: "E-Commerce" },
+  { value: "FINTECH", label: "Fintech" },
+  { value: "TECHNOLOGY", label: "Technology" },
+  { value: "FOOD", label: "Food" },
+  { value: "CLOUD_COMPUTING", label: "Cloud Computing" },
+  { value: "CYBER_SECURITY", label: "Cybersecurity" },
+  { value: "BIOTECHNOLOGY", label: "Biotechnology" },
+  { value: "SOFTWARE_DEVELOPMENT", label: "Software Development" },
+  { value: "BLOCKCHAIN", label: "Blockchain" },
+  { value: "HEALTHTECH", label: "Health Tech" },
+  { value: "MEDICAL_DEVICES", label: "Medical Devices" },
+  { value: "MENTAL_HEALTH", label: "Mental Health" },
+]
 
 const CreateStartup = () => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [services, setServices] = useState("");
-  const [email, setEmail] = useState("");
-  const [contact, setContact] = useState("");
-  const [address, setAddress] = useState("");
-  const [operatingHours, setOperatingHours] = useState("");
-  const [website, setWebsite] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    services: "",
+    email: "",
+    contact: "",
+    address: "",
+    operatingHours: "",
+    website: "",
+  })
 
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [activeTab, setActiveTab] = useState("basic")
 
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+  }
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, services: value }))
+
+    // Clear error when user selects a value
+    if (errors.services) {
+      setErrors((prev) => ({ ...prev, services: "" }))
+    }
+  }
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Basic validation
+    if (!formData.name.trim()) newErrors.name = "Startup name is required"
+    if (!formData.description.trim()) newErrors.description = "Description is required"
+    if (!formData.services) newErrors.services = "Please select a service category"
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address"
+    }
+
+    // Contact validation
+    if (!formData.contact.trim()) {
+      newErrors.contact = "Contact number is required"
+    } else if (!/^[0-9+\-\s()]{7,15}$/.test(formData.contact)) {
+      newErrors.contact = "Please enter a valid phone number"
+    }
+
+    // Address validation
+    if (!formData.address.trim()) newErrors.address = "Address is required"
+
+    // Operating hours validation
+    if (!formData.operatingHours.trim()) newErrors.operatingHours = "Operating hours are required"
+
+    // Website validation
+    if (!formData.website.trim()) {
+      newErrors.website = "Website URL is required"
+    } else if (!/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}([/\w-]*)*\/?$/.test(formData.website)) {
+      newErrors.website = "Please enter a valid website URL"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const formData = {
-      name,
-      description,
-      services,
-      email,
-      contact,
-      address,
-      operatingHours,
-      website,
-    };
+    if (!validateForm()) {
+      // If there are validation errors, switch to the tab with the first error
+      const errorFields = Object.keys(errors)
 
-    await dispatch(postStartups(formData));
-    navigate("/");
-    setName("");
-    setDescription("");
-    setServices("");
-    setEmail("");
-    setContact("");
-    setAddress("");
-    setOperatingHours("");
-    setWebsite("");
-  };
+      if (errorFields.some((field) => ["name", "description", "services"].includes(field))) {
+        setActiveTab("basic")
+      } else if (errorFields.some((field) => ["email", "contact", "website"].includes(field))) {
+        setActiveTab("contact")
+      } else if (errorFields.some((field) => ["address", "operatingHours"].includes(field))) {
+        setActiveTab("location")
+      }
+
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      await dispatch(postStartups(formData)).unwrap()
+      setSuccess(true)
+
+      // Reset form
+      setFormData({
+        name: "",
+        description: "",
+        services: "",
+        email: "",
+        contact: "",
+        address: "",
+        operatingHours: "",
+        website: "",
+      })
+
+      // Redirect after a short delay
+      setTimeout(() => {
+        navigate("/")
+      }, 2000)
+    } catch (error) {
+      console.error("Failed to create startup:", error)
+      setErrors({ submit: "Failed to create startup. Please try again." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const goToNextTab = () => {
+    if (activeTab === "basic") setActiveTab("contact")
+    else if (activeTab === "contact") setActiveTab("location")
+  }
+
+  const goToPrevTab = () => {
+    if (activeTab === "location") setActiveTab("contact")
+    else if (activeTab === "contact") setActiveTab("basic")
+  }
 
   return (
-    <section className="min-h-screen flex justify-center items-center mt-10 px-4">
-      <div className="max-w-xl w-full p-6 bg-white shadow-md rounded-lg border border-gray-200">
-        <h2 className="text-3xl font-semibold text-green-600 text-center mb-6">
-          Create a Startup
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaBuilding className="text-green-600 text-lg mr-3" />
-            <input
-              type="text"
-              placeholder="Startup Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+    <div className=" min-h-screen container mx-auto px-4 py-8 max-w-3xl">
+      <Button variant="ghost" className="mb-6" onClick={() => navigate("/")}>
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Startups
+      </Button>
 
-          {/* Description */}
-          <div className="flex items-start border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaBuilding className="text-green-600 text-lg mr-3" />
-            <textarea
-              placeholder="Brief Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full outline-none text-sm resize-none"
-              rows={3}
-              required
-            ></textarea>
+      <Card>
+        <CardHeader className="text-center">
+          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
+            <Building className="h-6 w-6 text-primary" />
           </div>
+          <CardTitle className="text-3xl">Create a Startup</CardTitle>
+          <CardDescription>Fill out the form below to add your startup to our directory</CardDescription>
+        </CardHeader>
 
-          {/* Services */}
-          {/* Services */}
-          <div className="flex flex-col border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <div className="relative">
-              <FaServicestack className="text-green-600 text-lg absolute top-1/2 left-3 transform -translate-y-1/2" />
-              <select
-                id="services"
-                value={services}
-                onChange={(e) => setServices(e.target.value)}
-                className="w-full outline-none pl-12 pr-4 py-2 text-sm text-gray-700 rounded-md bg-white border border-gray-300 appearance-none focus:ring-2 focus:ring-green-600 focus:border-green-600"
-              >
-                <option className="text-black/10">Services</option>
-                <option value="CROWD_FUNDING">Crowd Funding</option>
-                <option value="AI_ML">AI/ML</option>
-                <option value="AR_VR">AR/VR</option>
-                <option value="HEALTHCARE">Health Care</option>
-                <option value="E_COMMERCE">E-Commerce</option>
-                <option value="FINTECH">Fintech</option>
-                <option value="TECHNOLOGY">Technology</option>
-                <option value="FOOD">Food</option>
-                <option value="CLOUD_COMPUTING">Cloud Computing</option>
-                <option value="CYBER_SECURITY">CyberSecurity</option>
-                <option value="BIOTECHNOLOGY">Bio Technology</option>
-                <option value="SOFTWARE_DEVELOPMENT">Software Development</option>
-                <option value="BLOCKCHAIN">BlockChain</option>
-                <option value="HEALTHTECH">Health Tech</option>
-                <option value="MEDICAL_DEVICES">Medical Devices</option>
-                <option value="MENTAL_HEALTH">Mental Health</option>
-              </select>
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6"></path>
-                </svg>
-              </span>
+        <form onSubmit={handleSubmit}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="px-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="basic" className="flex items-center gap-2">
+                  <Building className="h-4 w-4" />
+                  <span className="hidden sm:inline">Basic Info</span>
+                  <span className="sm:hidden">Basic</span>
+                </TabsTrigger>
+                <TabsTrigger value="contact" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span className="hidden sm:inline">Contact</span>
+                  <span className="sm:hidden">Contact</span>
+                </TabsTrigger>
+                <TabsTrigger value="location" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span className="hidden sm:inline">Location</span>
+                  <span className="sm:hidden">Location</span>
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </div>
 
-          {/* Email */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaEnvelope className="text-green-600 text-lg mr-3" />
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+            <CardContent className="pt-6">
+              <TabsContent value="basic" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">
+                    Startup Name <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Enter your startup name"
+                      className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.name && <p className="text-destructive text-sm">{errors.name}</p>}
+                </div>
 
-          {/* Contact */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaPhone className="text-green-600 text-lg mr-3" />
-            <input
-              type="text"
-              placeholder="Contact Number"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">
+                    Description <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Briefly describe your startup and what it does"
+                    className={`min-h-[120px] ${errors.description ? "border-destructive" : ""}`}
+                  />
+                  {errors.description && <p className="text-destructive text-sm">{errors.description}</p>}
+                </div>
 
-          {/* Address */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaMapMarkerAlt className="text-green-600 text-lg mr-3" />
-            <input
-              type="text"
-              placeholder="Business Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="services">
+                    Service Category <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={formData.services} onValueChange={handleSelectChange}>
+                    <SelectTrigger id="services" className={`${errors.services ? "border-destructive" : ""}`}>
+                      <div className="flex items-center">
+                        <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <SelectValue placeholder="Select a service category" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SERVICE_CATEGORIES.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.services && <p className="text-destructive text-sm">{errors.services}</p>}
+                </div>
 
-          {/* Operating Hours */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaRegClock className="text-green-600 text-lg mr-3" />
-            <input
-              type="text"
-              placeholder="Operating Hours (e.g. 9 AM - 5 PM)"
-              value={operatingHours}
-              onChange={(e) => setOperatingHours(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+                <div className="flex justify-end pt-4">
+                  <Button type="button" onClick={goToNextTab}>
+                    Continue to Contact
+                  </Button>
+                </div>
+              </TabsContent>
 
-          {/* Website */}
-          <div className="flex items-center border border-gray-300 p-3 rounded-md focus-within:border-green-600">
-            <FaGlobe className="text-green-600 text-lg mr-3" />
-            <input
-              type="text"
-              placeholder="Website URL"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              className="w-full outline-none text-sm"
-              required
-            />
-          </div>
+              <TabsContent value="contact" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">
+                    Email Address <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Enter your business email"
+                      className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
+                </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition ease-in-out duration-300"
-          >
-            Create Startup
-          </button>
+                <div className="space-y-2">
+                  <Label htmlFor="contact">
+                    Contact Number <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="contact"
+                      name="contact"
+                      value={formData.contact}
+                      onChange={handleChange}
+                      placeholder="Enter your contact number"
+                      className={`pl-10 ${errors.contact ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.contact && <p className="text-destructive text-sm">{errors.contact}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="website">
+                    Website URL <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="website"
+                      name="website"
+                      value={formData.website}
+                      onChange={handleChange}
+                      placeholder="Enter your website URL"
+                      className={`pl-10 ${errors.website ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.website && <p className="text-destructive text-sm">{errors.website}</p>}
+                </div>
+
+                <div className="flex justify-between pt-4">
+                  <Button type="button" variant="outline" onClick={goToPrevTab}>
+                    Back
+                  </Button>
+                  <Button type="button" onClick={goToNextTab}>
+                    Continue to Location
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="location" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="address">
+                    Business Address <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Enter your business address"
+                      className={`pl-10 ${errors.address ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.address && <p className="text-destructive text-sm">{errors.address}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="operatingHours">
+                    Operating Hours <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="operatingHours"
+                      name="operatingHours"
+                      value={formData.operatingHours}
+                      onChange={handleChange}
+                      placeholder="e.g. Mon-Fri: 9 AM - 5 PM"
+                      className={`pl-10 ${errors.operatingHours ? "border-destructive" : ""}`}
+                    />
+                  </div>
+                  {errors.operatingHours && <p className="text-destructive text-sm">{errors.operatingHours}</p>}
+                </div>
+
+                {errors.submit && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.submit}</AlertDescription>
+                  </Alert>
+                )}
+
+                {success && (
+                  <Alert className="bg-green-50 text-green-700 border-green-200">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    <AlertDescription>Startup created successfully! Redirecting...</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex justify-between pt-4">
+                  <Button type="button" variant="outline" onClick={goToPrevTab}>
+                    Back
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Startup"
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
+            </CardContent>
+          </Tabs>
         </form>
-      </div>
-    </section>
-  );
-};
 
-export default CreateStartup;
+        <Separator />
+
+        <CardFooter className="flex justify-center p-6">
+          <p className="text-sm text-muted-foreground">
+            By submitting this form, you agree to our Terms of Service and Privacy Policy.
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}
+
+export default CreateStartup
+

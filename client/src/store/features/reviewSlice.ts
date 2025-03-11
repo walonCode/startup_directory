@@ -10,7 +10,7 @@ interface Reviews {
     user:string
 }
 
-const BASE_URL = 'http://localhost:3005/api/reviews'
+const BASE_URL = 'https://startup-directory-server.vercel.app/api/reviews'
 
 interface ReviewState {
     review: Reviews[];

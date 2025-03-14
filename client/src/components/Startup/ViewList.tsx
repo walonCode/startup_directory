@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useAppSelector } from "../../hooks/storeHooks"
 import { allStartup } from "../../store/features/startupSlice"
@@ -49,7 +47,11 @@ export default function ViewList() {
   const [sortBy, setSortBy] = useState<string>("name")
   const [isLoading, setIsLoading] = useState(true)
   const [viewType, setViewType] = useState<"grid" | "list">("grid")
-  
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   // Extract all unique services for filtering
   const allServices = extractServices(startups)
   
@@ -104,6 +106,13 @@ export default function ViewList() {
     setSelectedServices([])
     setSortBy("name")
   }
+
+  const totalPages = Math.ceil(filteredStartups.length / itemsPerPage)
+  const paginatedStartups = filteredStartups.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const nextPage = () => setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  const prevPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  const goToPage = (_page:number) => setCurrentPage(_page);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -254,7 +263,7 @@ export default function ViewList() {
         </div>
       ) : filteredStartups.length > 0 ? (
         <div className={`grid gap-6 ${viewType === 'grid' ? 'sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-          {filteredStartups.map((startup) => (
+          {paginatedStartups.map((startup) => (
             <StartupCard 
               key={startup._id} 
               startup={startup} 
@@ -274,6 +283,28 @@ export default function ViewList() {
           </CardContent>
         </Card>
       )}
+      
+      {/* Pagination Controls */}
+      <div className="flex justify-between mt-8">
+        <Button onClick={prevPage} disabled={currentPage === 1}>
+          Previous
+        </Button>
+        <div className="flex items-center gap-2">
+          <span>Page {currentPage} of {totalPages}</span>
+          <Select value={currentPage.toString()} onValueChange={(value) => goToPage(Number(value))}>
+            <SelectContent>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <SelectItem key={i} value={(i + 1).toString()}>
+                  {i + 1}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={nextPage} disabled={currentPage === totalPages}>
+          Next
+        </Button>
+      </div>
     </div>
   )
 }

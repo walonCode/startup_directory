@@ -1,4 +1,4 @@
-import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice,createAsyncThunk,} from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import axios from "axios";
 
@@ -59,8 +59,8 @@ interface StartupState {
 const initialState:StartupState = {
     startup:[],
     status:'idle',
-    error:null
-};
+    error:null,
+}  
 
 const startupSlice = createSlice({
     name:'startup',
@@ -96,10 +96,13 @@ const startupSlice = createSlice({
     }
 })
 
+
 //sending the states
 export const allStartup = (state:RootState) => state.startup.startup
 export const getStartupStatus = (state:RootState) => state.startup.status; 
 export const getStartupError = (state:RootState) => state.startup.error ;
+
+
 
 //sending an indiviual startup
 export const selectStartupById = (state:RootState, id:string | undefined) => state.startup.startup.find(startup => startup._id === id)

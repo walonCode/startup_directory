@@ -58,18 +58,18 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
 
   if (viewType === "list") {
     return (
-      <Card className="overflow-hidden transition-all hover:shadow-md">
+      <Card className="overflow-hidden transition-all hover:shadow-lg border-0 shadow-md group">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/4 bg-primary/5 flex items-center justify-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Building className="h-8 w-8 text-primary" />
+          <div className="md:w-1/4 bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center p-6">
+            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-transform group-hover:scale-110">
+              <Building className="h-8 w-8 text-white" />
             </div>
           </div>
 
           <div className="flex-1 p-6">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-xl font-bold">{startup.name}</h3>
+                <h3 className="text-xl font-bold group-hover:text-teal-600 transition-colors">{startup.name}</h3>
                 <div className="flex items-center mt-1 text-sm text-muted-foreground">
                   <MapPin className="h-3 w-3 mr-1" />
                   <span>{startup.address}</span>
@@ -79,7 +79,7 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
               <Button
                 variant="ghost"
                 size="icon"
-                className={`rounded-full ${isFavorite ? "text-red-500" : "text-muted-foreground"}`}
+                className={`rounded-full ${isFavorite ? "text-red-500 bg-red-50" : "text-muted-foreground hover:bg-red-50 hover:text-red-500"}`}
                 onClick={toggleFavorite}
               >
                 <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500" : ""}`} />
@@ -102,42 +102,69 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
                   />
                 ))}
               </div>
-              <span className="ml-2 text-sm">
-                {rating} ({reviewCount} reviews)
+              <span className="ml-2 text-sm font-medium">
+                {rating} <span className="text-muted-foreground font-normal">({reviewCount} reviews)</span>
               </span>
             </div>
 
-            <p className="text-muted-foreground mb-4">{truncateDescription(startup.description, 150)}</p>
+            <p className="text-muted-foreground mb-4 leading-relaxed">
+              {truncateDescription(startup.description, 150)}
+            </p>
 
             <div className="flex flex-wrap gap-2 mb-4">
               {servicesList.slice(0, 3).map((service, index) => (
-                <Badge key={index} variant="secondary">
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
+                >
                   {service}
                 </Badge>
               ))}
-              {servicesList.length > 3 && <Badge variant="outline">+{servicesList.length - 3} more</Badge>}
+              {servicesList.length > 3 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="outline" className="cursor-help">
+                      +{servicesList.length - 3} more
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="space-y-1">
+                      {servicesList.slice(3).map((service, index) => (
+                        <p key={index} className="text-sm">
+                          {service}
+                        </p>
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
 
-            <div className="flex justify-between items-center">
-              <div className="flex items-center text-sm">
-                <Phone className="h-4 w-4 mr-1 text-muted-foreground" />
-                <span className="mr-4">{startup.contact}</span>
-                <Globe className="h-4 w-4 mr-1 text-muted-foreground" />
-                <a
-                  href={startup.website.startsWith("https") ? startup.website : `https://${startup.website}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {displayWebsite}
-                </a>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-1 text-teal-600" />
+                  <span>{startup.contact}</span>
+                </div>
+                <div className="flex items-center">
+                  <Globe className="h-4 w-4 mr-1 text-teal-600" />
+                  <a
+                    href={startup.website.startsWith("https") ? startup.website : `https://${startup.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-600 hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {displayWebsite}
+                  </a>
+                </div>
               </div>
 
-              <Button asChild>
-                <Link to={`startup/${startup._id}`}>
+              <Button asChild className="bg-teal-600 hover:bg-teal-700 transition-colors">
+                <Link to={`startup/${startup._id}`} className="gap-1">
                   View Details
-                  <ChevronRight className="ml-1 h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -148,29 +175,36 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
   }
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md h-full flex flex-col">
-      <CardHeader className="pb-2 relative">
+    <Card className="overflow-hidden transition-all hover:shadow-lg border-0 shadow-md h-full flex flex-col group">
+      <div className="absolute right-4 top-4 z-10">
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute right-4 top-4 rounded-full ${isFavorite ? "text-red-500" : "text-muted-foreground"}`}
+          className={`rounded-full ${
+            isFavorite
+              ? "text-red-500 bg-white/80 backdrop-blur-sm shadow-sm"
+              : "text-muted-foreground bg-white/80 backdrop-blur-sm shadow-sm hover:text-red-500"
+          }`}
           onClick={toggleFavorite}
         >
           <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500" : ""}`} />
           <span className="sr-only">{isFavorite ? "Remove from favorites" : "Add to favorites"}</span>
         </Button>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-2 rounded-full">
-            <Building className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <CardTitle>{startup.name}</CardTitle>
-            <CardDescription className="flex items-center mt-1">
-              <MapPin className="h-3 w-3 mr-1" />
-              {startup.address}
-            </CardDescription>
-          </div>
+      <div className="h-24 bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center">
+        <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full transition-transform group-hover:scale-110">
+          <Building className="h-6 w-6 text-white" />
+        </div>
+      </div>
+
+      <CardHeader className="pb-2 pt-4">
+        <div>
+          <CardTitle className="group-hover:text-teal-600 transition-colors">{startup.name}</CardTitle>
+          <CardDescription className="flex items-center mt-1">
+            <MapPin className="h-3 w-3 mr-1" />
+            {startup.address}
+          </CardDescription>
         </div>
 
         <div className="flex items-center mt-2">
@@ -189,38 +223,59 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
             ))}
           </div>
           <span className="ml-2 text-sm">
-            {rating} ({reviewCount})
+            <span className="font-medium">{rating}</span> <span className="text-muted-foreground">({reviewCount})</span>
           </span>
         </div>
       </CardHeader>
 
       <CardContent className="flex-grow">
-        <p className="text-muted-foreground mb-4">{truncateDescription(startup.description, 100)}</p>
+        <p className="text-muted-foreground mb-4 leading-relaxed">{truncateDescription(startup.description, 100)}</p>
 
-        <div className="flex flex-wrap gap-1 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-4">
           {servicesList.slice(0, 3).map((service, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+            <Badge
+              key={index}
+              variant="secondary"
+              className="text-xs bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
+            >
               {service}
             </Badge>
           ))}
           {servicesList.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{servicesList.length - 3}
-            </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className="text-xs cursor-help">
+                  +{servicesList.length - 3}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="space-y-1">
+                  {servicesList.slice(3).map((service, index) => (
+                    <p key={index} className="text-sm">
+                      {service}
+                    </p>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
 
         <div className="space-y-2 text-sm">
           <div className="flex items-center">
-            <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+            <Phone className="h-4 w-4 mr-2 text-teal-600" />
             <span>{startup.contact}</span>
           </div>
           <div className="flex items-center">
-            <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+            <Mail className="h-4 w-4 mr-2 text-teal-600" />
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a href={`mailto:${startup.email}`} className="text-primary hover:underline truncate max-w-[200px]">
+                  <a
+                    href={`mailto:${startup.email}`}
+                    className="text-teal-600 hover:underline truncate max-w-[200px]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {startup.email}
                   </a>
                 </TooltipTrigger>
@@ -231,10 +286,17 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
             </TooltipProvider>
           </div>
           <div className="flex items-center">
-            <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-            <span className="truncate" title={startup.operatingHours}>
-              {startup.operatingHours}
-            </span>
+            <Clock className="h-4 w-4 mr-2 text-teal-600" />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="truncate max-w-[200px]">{startup.operatingHours}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{startup.operatingHours}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </CardContent>
@@ -242,12 +304,18 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
       <Separator />
 
       <CardFooter className="flex justify-between pt-4">
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800 transition-colors"
+        >
           <a
-            href={startup.website.startsWith("http") ? startup.website : `https://${startup.website}`}
+            href={startup.website.startsWith("https") ? startup.website : `https://${startup.website}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center"
+            onClick={(e) => e.stopPropagation()}
           >
             <Globe className="mr-1 h-4 w-4" />
             Website
@@ -255,11 +323,10 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
           </a>
         </Button>
 
-        <Button size="sm" asChild>
+        <Button size="sm" asChild className="bg-teal-600 hover:bg-teal-700 transition-colors">
           <Link to={`startup/${startup._id}`}>View Details</Link>
         </Button>
       </CardFooter>
     </Card>
   )
 }
-

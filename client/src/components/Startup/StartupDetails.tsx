@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useAppSelector, useAppDispatch } from "../../hooks/storeHooks"
 import { selectStartupById } from "../../store/features/startupSlice"
 import { useParams } from "react-router-dom"
@@ -21,6 +20,7 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle,
+  Users,
 } from "lucide-react"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
@@ -42,6 +42,7 @@ import { Label } from "../ui/label"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Alert, AlertDescription } from "../ui/alert"
+import { Avatar, AvatarFallback } from "../ui/avatar"
 
 export default function StartupDetails() {
   const { id } = useParams<{ id: string }>()
@@ -103,17 +104,17 @@ export default function StartupDetails() {
 
   if (!startup) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
-          <CardHeader>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md shadow-lg border-0">
+          <CardHeader className="pb-2">
             <CardTitle className="text-2xl text-center text-destructive">Startup Not Found</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center pt-2">
             <p className="text-muted-foreground">The startup you're looking for doesn't exist or has been removed.</p>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button variant="outline" onClick={() => window.history.back()}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
+          <CardFooter className="flex justify-center pt-2 pb-6">
+            <Button variant="outline" onClick={() => window.history.back()} className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
               Go Back
             </Button>
           </CardFooter>
@@ -128,9 +129,16 @@ export default function StartupDetails() {
       ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
       : "No ratings yet"
 
+  // Parse services into array
+  const servicesList = startup.services.split(",").map((service) => service.trim())
+
   return (
     <div className="container min-h-screen mx-auto px-4 py-8 max-w-6xl">
-      <Button variant="ghost" className="mb-6" onClick={() => window.history.back()}>
+      <Button
+        variant="ghost"
+        className="mb-6 hover:bg-slate-100 transition-colors"
+        onClick={() => window.history.back()}
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Startups
       </Button>
@@ -138,15 +146,18 @@ export default function StartupDetails() {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Main Content - 2/3 width on medium screens and up */}
         <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <Building className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-3xl">{startup.name}</CardTitle>
-                  <CardDescription className="flex items-center mt-1">
+          <Card className="overflow-hidden border-0 shadow-md">
+            <div className="h-24 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+            <CardHeader className="-mt-12 pb-4">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-20 w-20 border-4 border-white bg-white shadow-md">
+                  <AvatarFallback className="bg-teal-100 text-teal-700 text-2xl font-bold">
+                    {startup.name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="pt-10">
+                  <CardTitle className="text-3xl font-bold">{startup.name}</CardTitle>
+                  <CardDescription className="flex items-center mt-1 text-sm">
                     <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
                     {startup.address}
                   </CardDescription>
@@ -155,37 +166,53 @@ export default function StartupDetails() {
             </CardHeader>
             <Separator />
             <CardContent className="pt-6">
-              <h3 className="text-xl font-semibold mb-3">About</h3>
-              <p className="text-muted-foreground">{startup.description}</p>
+              <h3 className="text-xl font-semibold mb-3 flex items-center">
+                <Building className="h-5 w-5 mr-2 text-teal-600" />
+                About
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">{startup.description}</p>
 
               <h3 className="text-xl font-semibold mt-6 mb-3 flex items-center">
-                <Briefcase className="h-5 w-5 mr-2 text-primary" />
+                <Briefcase className="h-5 w-5 mr-2 text-teal-600" />
                 Services Offered
               </h3>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <p>{startup.services}</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {servicesList.map((service, index) => (
+                  <Badge key={index} variant="secondary" className="bg-teal-50 text-teal-700 hover:bg-teal-100">
+                    {service}
+                  </Badge>
+                ))}
               </div>
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="reviews">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="reviews">
+          <Tabs defaultValue="reviews" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 rounded-lg bg-slate-100 p-1">
+              <TabsTrigger
+                value="reviews"
+                className="rounded-md data-[state=active]:bg-white data-[state=active]:text-teal-700 data-[state=active]:shadow-sm"
+              >
                 <Star className="h-4 w-4 mr-2" />
                 Reviews ({reviews.length})
               </TabsTrigger>
-              <TabsTrigger value="info">
+              <TabsTrigger
+                value="info"
+                className="rounded-md data-[state=active]:bg-white data-[state=active]:text-teal-700 data-[state=active]:shadow-sm"
+              >
                 <Globe className="h-4 w-4 mr-2" />
                 Contact Information
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="reviews" className="space-y-4 pt-4">
+            <TabsContent value="reviews" className="space-y-4 pt-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-semibold">Customer Reviews</h3>
+                <h3 className="text-xl font-semibold flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-teal-600" />
+                  Customer Reviews
+                </h3>
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button className="bg-teal-600 hover:bg-teal-700">
                       <PlusCircle className="h-4 w-4 mr-2" />
                       Add Review
                     </Button>
@@ -205,13 +232,14 @@ export default function StartupDetails() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Enter your name"
+                            className="focus-visible:ring-teal-500"
                           />
                         </div>
 
                         <div className="grid gap-2">
                           <Label htmlFor="rating">Rating</Label>
                           <Select value={rating} onValueChange={setRating}>
-                            <SelectTrigger>
+                            <SelectTrigger className="focus-visible:ring-teal-500">
                               <SelectValue placeholder="Select a rating" />
                             </SelectTrigger>
                             <SelectContent>
@@ -232,6 +260,7 @@ export default function StartupDetails() {
                             onChange={(e) => setComment(e.target.value)}
                             placeholder="Write your review here..."
                             rows={4}
+                            className="focus-visible:ring-teal-500"
                           />
                         </div>
 
@@ -255,7 +284,7 @@ export default function StartupDetails() {
                             Cancel
                           </Button>
                         </DialogClose>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button type="submit" disabled={isSubmitting} className="bg-teal-600 hover:bg-teal-700">
                           {isSubmitting ? "Submitting..." : "Submit Review"}
                         </Button>
                       </DialogFooter>
@@ -265,9 +294,18 @@ export default function StartupDetails() {
               </div>
 
               {reviews.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center">
+                <Card className="border border-dashed border-slate-200 bg-slate-50">
+                  <CardContent className="py-12 text-center">
+                    <Star className="h-12 w-12 mx-auto mb-4 text-slate-300" />
                     <p className="text-muted-foreground">No reviews yet. Be the first to leave a review!</p>
+                    <Button
+                      onClick={() => setIsModalOpen(true)}
+                      variant="outline"
+                      className="mt-4 border-teal-200 text-teal-700 hover:bg-teal-50"
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add Review
+                    </Button>
                   </CardContent>
                 </Card>
               ) : (
@@ -279,64 +317,79 @@ export default function StartupDetails() {
               )}
             </TabsContent>
 
-            <TabsContent value="info" className="pt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
+            <TabsContent value="info" className="pt-6">
+              <Card className="border-0 shadow-md">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center text-xl">
+                    <Phone className="h-5 w-5 mr-2 text-teal-600" />
+                    Contact Information
+                  </CardTitle>
                   <CardDescription>Get in touch with {startup.name}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pt-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center p-3 bg-muted/50 rounded-lg">
-                      <Mail className="h-5 w-5 mr-3 text-primary" />
+                    <div className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <Mail className="h-5 w-5 mr-3 text-teal-600" />
                       <div>
                         <p className="text-sm text-muted-foreground">Email</p>
-                        <a href={`mailto:${startup.email}`} className="font-medium hover:text-primary">
+                        <a
+                          href={`mailto:${startup.email}`}
+                          className="font-medium hover:text-teal-600 transition-colors"
+                        >
                           {startup.email}
                         </a>
                       </div>
                     </div>
 
-                    <div className="flex items-center p-3 bg-muted/50 rounded-lg">
-                      <Phone className="h-5 w-5 mr-3 text-primary" />
+                    <div className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <Phone className="h-5 w-5 mr-3 text-teal-600" />
                       <div>
                         <p className="text-sm text-muted-foreground">Phone</p>
-                        <p className="font-medium">{startup.contact}</p>
+                        <a
+                          href={`tel:${startup.contact}`}
+                          className="font-medium hover:text-teal-600 transition-colors"
+                        >
+                          {startup.contact}
+                        </a>
                       </div>
                     </div>
 
-                    <div className="flex items-center p-3 bg-muted/50 rounded-lg">
-                      <Globe className="h-5 w-5 mr-3 text-primary" />
+                    <div className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <Globe className="h-5 w-5 mr-3 text-teal-600" />
                       <div>
                         <p className="text-sm text-muted-foreground">Website</p>
                         <a
                           href={startup.website.startsWith("http") ? startup.website : `https://${startup.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium hover:text-primary"
+                          className="font-medium hover:text-teal-600 transition-colors"
                         >
                           {startup.website}
                         </a>
                       </div>
                     </div>
 
-                    <div className="flex items-center p-3 bg-muted/50 rounded-lg">
-                      <Clock className="h-5 w-5 mr-3 text-primary" />
+                    <div className="flex items-center p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <Clock className="h-5 w-5 mr-3 text-teal-600" />
                       <div>
                         <p className="text-sm text-muted-foreground">Operating Hours</p>
                         <p className="font-medium">{startup.operatingHours}</p>
                       </div>
                     </div>
                   </div>
-
-                  <div className="mt-4">
-                    <h3 className="text-lg font-medium mb-2">Location</h3>
-                    <div className="bg-muted h-[200px] rounded-lg flex items-center justify-center">
-                      <MapPin className="h-8 w-8 text-muted-foreground" />
-                      <span className="ml-2 text-muted-foreground">Map view would go here</span>
-                    </div>
-                  </div>
                 </CardContent>
+                <CardFooter className="pt-2 pb-6">
+                  <Button className="w-full bg-teal-600 hover:bg-teal-700" asChild>
+                    <a
+                      href={startup.website.startsWith("http") ? startup.website : `https://${startup.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Globe className="h-4 w-4 mr-2" />
+                      Visit Website
+                    </a>
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
           </Tabs>
@@ -344,52 +397,77 @@ export default function StartupDetails() {
 
         {/* Sidebar - 1/3 width on medium screens and up */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Startup Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                <span className="text-muted-foreground">Average Rating</span>
-                <div className="flex items-center">
-                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500 mr-1" />
-                  <span className="font-bold">{avgRating}</span>
+          <Card className="border-0 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-teal-500 to-emerald-500 py-4">
+              <CardTitle className="text-center text-white">Startup Overview</CardTitle>
+            </div>
+            <CardContent className="space-y-4 pt-6">
+              <div className="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
+                <span className="text-muted-foreground flex items-center">
+                  <Star className="h-4 w-4 mr-2" />
+                  Average Rating
+                </span>
+                <div className="flex items-center bg-teal-50 px-3 py-1 rounded-full">
+                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
+                  <span className="font-bold text-teal-700">{avgRating}</span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                <span className="text-muted-foreground">Total Reviews</span>
-                <span className="font-bold">{reviews.length}</span>
+              <div className="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
+                <span className="text-muted-foreground flex items-center">
+                  <Users className="h-4 w-4 mr-2" />
+                  Total Reviews
+                </span>
+                <div className="bg-teal-50 px-3 py-1 rounded-full">
+                  <span className="font-bold text-teal-700">{reviews.length}</span>
+                </div>
               </div>
 
-              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                <span className="text-muted-foreground">Founded</span>
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="font-bold">2020</span>
+              <div className="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
+                <span className="text-muted-foreground flex items-center">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Founded
+                </span>
+                <div className="bg-teal-50 px-3 py-1 rounded-full">
+                  <span className="font-bold text-teal-700">2020</span>
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button className="w-full" variant="outline">
-                <Globe className="h-4 w-4 mr-2" />
-                Visit Website
+            <CardFooter className="pt-2 pb-6">
+              <Button
+                className="w-full bg-white border-teal-200 text-teal-700 hover:bg-teal-50"
+                variant="outline"
+                asChild
+              >
+                <a href={`tel:${startup.contact}`} className="flex items-center justify-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Contact Now
+                </a>
               </Button>
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Services</CardTitle>
+          <Card className="border-0 shadow-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center text-xl">
+                <Briefcase className="h-5 w-5 mr-2 text-teal-600" />
+                Key Services
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {startup.services.split(",").map((service, index) => (
-                  <Badge key={index} variant="secondary">
-                    {service.trim()}
-                  </Badge>
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-2 gap-2">
+                {servicesList.slice(0, 6).map((service, index) => (
+                  <div key={index} className="flex items-center p-3 bg-slate-50 rounded-lg">
+                    <CheckCircle className="h-4 w-4 mr-2 text-teal-600" />
+                    <span className="text-sm">{service}</span>
+                  </div>
                 ))}
               </div>
+              {servicesList.length > 6 && (
+                <p className="text-center text-sm text-muted-foreground mt-3">
+                  +{servicesList.length - 6} more services
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -397,4 +475,3 @@ export default function StartupDetails() {
     </div>
   )
 }
-

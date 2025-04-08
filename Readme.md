@@ -138,8 +138,8 @@ To populate the database with sample data, you can run a function in the `startu
 ---
 
 ## **🚀 Deployment**
-- **Frontend:** Deployed on **Vercel/Netlify**
-- **Backend:** Hosted on **Render/Fly.io**
+- **Frontend:** Deployed on **Vercel**
+- **Backend:** Hosted on **Vercel**
 - **Database:** MongoDB Atlas  
 
 ---

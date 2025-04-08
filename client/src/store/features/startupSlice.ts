@@ -2,7 +2,14 @@ import { createSlice,createAsyncThunk,} from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import axios from "axios";
 
-const BASE_URL = 'https://startup-directory-server.vercel.app/api/startup'
+
+
+let BASE_URL;
+if(import.meta.env.VITE_NODE_ENV === "development"){
+    BASE_URL = 'http://localhost:3000/api/startups'
+}else{
+    BASE_URL = 'https://startup-directory-server.vercel.app/api/startups'
+}
 
 interface Startup {
     _id?:string;

@@ -5,79 +5,79 @@ export const startups = [
     services: "E_COMMERCE",
     contact: "+232 78 123 456",
     operatingHours: "9:00 AM - 6:00 PM, Monday to Saturday",
-    address: "123 Aberdeen Road, Freetown, Sierra Leone",
-    email: "info@sendme.com",
-    website: "https://www.sendme.com"
+    address: "55 Campbell Street, Freetown, Sierra Leone",
+    email: "sendmesl1@gmail.com",
+    website: "https://www.sendmesl.com"
   },
   {
     name: "Christex Limited",
     description: "Christex is a technology startup that deals in blockchain and more, providing cutting-edge solutions for various industries in Sierra Leone.",
     services: "BLOCKCHAIN",
     contact: "+232 79 654 321",
-    operatingHours: "8:00 AM - 5:00 PM, Monday to Friday",
-    address: "40 Wilkinson Road, Freetown, Sierra Leone",
-    email: "contact@christexsl.com",
-    website: "https://www.christexsl.com"
+    operatingHours: "8:00 AM - 5:00 PM, Monday to Saturday",
+    address: "Lowwer Faculty FBC Opposite Law Department, Freetown, Sierra Leone",
+    email: "hello@christex.foundation",
+    website: "https://www.christex.foundation"
   },
   {
-    name: "Genistudio",
-    description: "Genistudio is a creative digital agency focused on web design, graphic design, and digital marketing, helping brands grow their online presence.",
-    services: "E_COMMERCE",
+    name: "Geniline-X",
+    description: "Geniline-X is a creative digital agency focused on web design, graphic design, and digital marketing, helping brands grow their online presence.",
+    services: "SOFTWARE_DEVELOPMENT",
     contact: "+232 76 123 789",
     operatingHours: "9:00 AM - 6:00 PM, Monday to Friday",
-    address: "8 New England Village, Freetown, Sierra Leone",
-    email: "info@genistudio.com",
-    website: "https://www.genistudio.com"
+    address: "20 Collier Street, Godrich, Freetown, Sierra Leone",
+    email: "info@geniline-x.net",
+    website: "https://www.geniline-x.net"
   },
   {
-    name: "SierraTech Innovations",
-    description: "SierraTech Innovations focuses on developing software solutions for businesses to improve operations and increase productivity across Sierra Leone.",
-    services: "SOFTWARE_DEVELOPMENT",
-    contact: "+232 88 987 654",
-    operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
-    address: "15 Hill Station, Freetown, Sierra Leone",
-    email: "contact@sierratech.com",
-    website: "https://www.sierratech.com"
-  },
-  {
-    name: "Coco&Co",
-    description: "Coco&Co is a social enterprise focused on producing and distributing high-quality organic coconut-based products in Sierra Leone.",
-    services: "FOOD",
-    contact: "+232 79 234 567",
-    operatingHours: "8:00 AM - 6:00 PM, Monday to Saturday",
-    address: "12 Bureh Road, Freetown, Sierra Leone",
-    email: "info@cocoandco.com",
-    website: "https://www.cocoandco.com"
-  },
-  {
-    name: "GreenTech Solutions",
-    description: "GreenTech Solutions provides sustainable energy solutions through solar power systems to reduce energy costs for businesses and households.",
+    name: "Easy Solar",
+    description: "Easy Solar is a startup that provides solar energy solutions for businesses and households in Sierra Leone.",
     services: "TECHNOLOGY",
-    contact: "+232 77 321 876",
+    contact: "+232 75 925 991",
     operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
-    address: "45 PZ Area, Freetown, Sierra Leone",
-    email: "contact@greentech.com",
-    website: "https://www.greentech.com"
+    address: "48 Hill Station, Wilberforce, Freetown, Sierra Leone",
+    email: "info@easysolar.org",
+    website: "https://www.easysolar.org"
   },
   {
-    name: "EduGlobal Sierra Leone",
-    description: "EduGlobal Sierra Leone provides online and offline educational resources to help students excel in their studies and careers.",
-    services: "HEALTHTECH",
-    contact: "+232 76 555 345",
+    name: "Mocha",
+    description: "Mocha is a fintech that challenges the traditional way to send and recieve money all over the world ",
+    services: "FINTECH",
+    contact: "+232 73 938 372",
+    operatingHours: "8:00 AM - 6:00 PM, Monday to Saturday",
+    address: "Lower Faculty FBC Oppossite Law Department, Freetown, Sierra Leone",
+    email: "mocha@christex.foundation",
+    website: "https://www.getmocha.io"
+  },
+  {
+    name: "Easy Stem",
+    description: "Easy stem a startup that tries to provide and improve the educational system in Sierra Leone by leveraging technology",
+    services: "EDUCATION",
+    contact: "+232 75 209 846",
+    operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
+    address: "Freetown, Sierra Leone",
+    email: "info@easystemsl.com",
+    website: "https://www.easystemsl.com"
+  },
+  {
+    name: "Mikashboks",
+    description: "Mikashboks is a fintech platform that provides a secure and efficient way to save money in Sierra Leone.",
+    services: "FINTECH",
+    contact: "+232 77 775 776",
     operatingHours: "8:00 AM - 6:00 PM, Monday to Friday",
-    address: "10 Kissy Road, Freetown, Sierra Leone",
-    email: "info@eduglobalsl.com",
-    website: "https://www.eduglobalsl.com"
+    address: "20B Railway Line, Freetown, Sierra Leone",
+    email: "support@mikashboks.com",
+    website: "https://www.mikashboks.com/download"
   },
   {
-    name: "SmartFarm SL",
-    description: "SmartFarm SL is an agricultural startup providing innovative farming techniques and digital tools to help local farmers increase crop yield and reduce costs.",
-    services: "FOOD",
-    contact: "+232 72 444 321",
+    name: "Vult",
+    description: "Vult is a platfrom that allows users to use mobile money to buy stuff online or get their own prepaid card",
+    services: "FINTECH",
+    contact: "+232 30 800 888",
     operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
-    address: "22 Hill Station, Freetown, Sierra Leone",
-    email: "contact@smartfarmsl.com",
-    website: "https://www.smartfarmsl.com"
+    address: "37A Wilkinson Road, Freetown, Sierra Leone",
+    email: "info@vultme.io",
+    website: "https://linktr.ee/VultApp"
   },
   {
     name: "Freetown Cafe",
@@ -100,14 +100,14 @@ export const startups = [
     website: "https://www.techhubsl.com"
   },
   {
-    name: "AgriCoop",
-    description: "AgriCoop is a cooperative platform for farmers to connect, share resources, and access financing options for agricultural development.",
-    services: "FOOD",
-    contact: "+232 88 654 987",
+    name: "Monime",
+    description: "Monime is a startup that make it easy for developers to use mobile money on their app and website easily by giving them an easy to use api.",
+    services: "FINTECH",
+    contact: "+232 78 102 030",
     operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
-    address: "30 Kissy Road, Freetown, Sierra Leone",
-    email: "info@agricoop.com",
-    website: "https://www.agricoop.com"
+    address: "5 Hillside Bypass Road, Freetown, Sierra Leone",
+    email: "support@monime.space",
+    website: "https://www.monime.space/"
   },
   {
     name: "Fresh Produce Market",

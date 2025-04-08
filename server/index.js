@@ -27,7 +27,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 
 //api for get,post,put,and delete for the startup
-app.use('/api/startup',startupRouter)
+app.use('/api/startups',startupRouter)
 //api for get,post,patch and delete for reviews
 app.use('/api/reviews',reviewRouter)
 

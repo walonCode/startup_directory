@@ -103,7 +103,7 @@ export default function StartupDetails() {
 
   if (!startup) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh]">
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl text-center text-destructive">Startup Not Found</CardTitle>
@@ -129,7 +129,7 @@ export default function StartupDetails() {
       : "No ratings yet"
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container min-h-screen mx-auto px-4 py-8 max-w-6xl">
       <Button variant="ghost" className="mb-6" onClick={() => window.history.back()}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Startups

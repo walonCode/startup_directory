@@ -35,6 +35,7 @@ const SERVICE_CATEGORIES = [
   { value: "HEALTHTECH", label: "Health Tech" },
   { value: "MEDICAL_DEVICES", label: "Medical Devices" },
   { value: "MENTAL_HEALTH", label: "Mental Health" },
+  { value: "EDUCATION", label: "Education" },
 ]
 
 const CreateStartup = () => {

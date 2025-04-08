@@ -10,7 +10,13 @@ interface Reviews {
     user:string
 }
 
-const BASE_URL = 'https://startup-directory-server.vercel.app/api/reviews'
+let BASE_URL;
+if(import.meta.env.VITE_NODE_ENV === "development"){
+    BASE_URL = 'http://localhost:3000/api/reviews'
+}else{
+    BASE_URL = 'https://startup-directory-server.vercel.app/api/reviews'
+}
+
 
 interface ReviewState {
     review: Reviews[];

@@ -124,7 +124,7 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
                 <span className="mr-4">{startup.contact}</span>
                 <Globe className="h-4 w-4 mr-1 text-muted-foreground" />
                 <a
-                  href={startup.website.startsWith("http") ? startup.website : `https://${startup.website}`}
+                  href={startup.website.startsWith("https") ? startup.website : `https://${startup.website}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"

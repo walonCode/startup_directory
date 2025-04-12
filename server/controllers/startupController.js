@@ -65,6 +65,8 @@ export const createStartup = async (req, res) => {
         })
       }
 
+      fs.unlinkSync(req.file.path)
+
       const { data:imageDataUrl} = supabase.storage.from("startup").getPublicUrl(fileName,{
         transform: {
           width:500,

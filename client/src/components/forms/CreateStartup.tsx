@@ -1,14 +1,26 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import { useAppDispatch } from "../../hooks/storeHooks"
-import { postStartups } from "../../store/features/startupSlice"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import { Building, Mail, Globe, MapPin, Phone, Clock, Briefcase, ArrowLeft, Loader2, CheckCircle } from "lucide-react"
+import {
+  Building,
+  Mail,
+  Globe,
+  MapPin,
+  Phone,
+  Clock,
+  Briefcase,
+  ArrowLeft,
+  Loader2,
+  CheckCircle,
+  X,
+  ImageIcon,
+} from "lucide-react"
 import { Button } from "../ui/button"
+import { useAppDispatch } from "../../hooks/storeHooks"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { fetchStartups } from "../../store/features/startupSlice"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Label } from "../ui/label"
@@ -16,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription } from "../ui/alert"
 import { Separator } from "../ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import axios from "axios"
 
 // Define service categories with their display names
 const SERVICE_CATEGORIES = [
@@ -38,6 +51,13 @@ const SERVICE_CATEGORIES = [
   { value: "EDUCATION", label: "Education" },
 ]
 
+let BASE_URL
+if (import.meta.env.VITE_NODE_ENV === "development") {
+  BASE_URL = "http://localhost:3000/api/startups"
+} else {
+  BASE_URL = "https://startup-directory-server.vercel.app/api/startups"
+}
+
 const CreateStartup = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -48,12 +68,15 @@ const CreateStartup = () => {
     address: "",
     operatingHours: "",
     website: "",
+    logo: null as File | null,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState("basic")
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -74,6 +97,46 @@ const CreateStartup = () => {
     // Clear error when user selects a value
     if (errors.services) {
       setErrors((prev) => ({ ...prev, services: "" }))
+    }
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setErrors((prev) => ({ ...prev, logo: "Please upload an image file" }))
+      return
+    }
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, logo: "Image size should be less than 5MB" }))
+      return
+    }
+
+    // Clear any previous errors
+    if (errors.logo) {
+      setErrors((prev) => ({ ...prev, logo: "" }))
+    }
+
+    // Update form data
+    setFormData((prev) => ({ ...prev, logo: file }))
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, logo: null }))
+    setImagePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
     }
   }
 
@@ -136,25 +199,39 @@ const CreateStartup = () => {
 
     try {
       setIsSubmitting(true)
-      await dispatch(postStartups(formData)).unwrap()
-      setSuccess(true)
+      // Create FormData object to handle text and file data
+      const submissionData = new FormData();
+      submissionData.append("name", formData.name);
+      submissionData.append("description", formData.description);
+      submissionData.append("services", formData.services);
+      submissionData.append("email", formData.email);
+      submissionData.append("contact", formData.contact);
+      submissionData.append("address", formData.address);
+      submissionData.append("operatingHours", formData.operatingHours);
+      submissionData.append("website", formData.website);
+      if (formData.logo) {
+        submissionData.append("logo", formData.logo);
+      }
 
-      // Reset form
-      setFormData({
-        name: "",
-        description: "",
-        services: "",
-        email: "",
-        contact: "",
-        address: "",
-        operatingHours: "",
-        website: "",
-      })
-
-      // Redirect after a short delay
-      setTimeout(() => {
+      const response = await axios.post(BASE_URL, submissionData)
+      if(response.status === 201) {
+        setSuccess(true)
+        await dispatch(fetchStartups())
+        setFormData({
+          name: "",
+          description: "",
+          services: "",
+          email: "",
+          contact: "",
+          address: "",
+          operatingHours: "",
+          website: "",
+          logo: null,
+        })
+        setImagePreview(null)
         navigate("/")
-      }, 2000)
+      }
+    
     } catch (error) {
       console.error("Failed to create startup:", error)
       setErrors({ submit: "Failed to create startup. Please try again." })
@@ -293,6 +370,55 @@ const CreateStartup = () => {
                     </SelectContent>
                   </Select>
                   {errors.services && <p className="text-destructive text-sm">{errors.services}</p>}
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  <Label htmlFor="logo" className="text-sm font-medium flex items-center">
+                    Startup Logo
+                  </Label>
+                  <div className="flex flex-col gap-4">
+                    {imagePreview ? (
+                      <div className="relative w-full max-w-[200px] h-[200px] border rounded-lg overflow-hidden">
+                        <img
+                          src={imagePreview || "/placeholder.svg"}
+                          alt="Logo preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                        >
+                          <X className="h-4 w-4 text-gray-700" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="p-3 rounded-full bg-slate-100">
+                            <ImageIcon className="h-6 w-6 text-teal-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Click to upload logo</p>
+                            <p className="text-xs text-slate-500">SVG, PNG, JPG (max. 5MB)</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      id="logo"
+                      name="logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    {errors.logo && <p className="text-destructive text-sm">{errors.logo}</p>}
+                  </div>
                 </div>
 
                 <div className="flex justify-end pt-4">

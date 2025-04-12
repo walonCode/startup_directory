@@ -12,7 +12,7 @@ export const startups = [
   {
     name: "Christex Limited",
     description: "Christex Limited leverages blockchain technology to offer secure, transparent solutions for industries like finance and supply chain in Sierra Leone, driving innovation and trust.",
-    services: "Blockchain Technology",
+    services: "Blockchain",
     contact: "+232 79 654 321",
     operatingHours: "8:00 AM - 5:00 PM, Monday to Saturday",
     address: "Lower Faculty FBC, Opposite Law Department, Freetown, Sierra Leone",
@@ -22,7 +22,7 @@ export const startups = [
   {
     name: "Geneline-X",
     description: "Geniline-X is a digital agency specializing in web development, graphic design, and digital marketing, empowering Sierra Leonean brands to enhance their online presence.",
-    services: "Digital Services",
+    services: "Digital_Services",
     contact: "+232 76 123 789",
     operatingHours: "9:00 AM - 6:00 PM, Monday to Friday",
     address: "20 Collier Street, Goderich, Freetown, Sierra Leone",
@@ -32,7 +32,7 @@ export const startups = [
   {
     name: "Easy Solar",
     description: "Easy Solar distributes affordable solar energy solutions and life-improving products to households and businesses across Sierra Leone, promoting sustainable energy access.",
-    services: "Renewable Energy",
+    services: "Renewable_Energy",
     contact: "+232 75 925 991",
     operatingHours: "9:00 AM - 5:00 PM, Monday to Friday",
     address: "48 Hill Station, Wilberforce, Freetown, Sierra Leone",

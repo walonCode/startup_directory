@@ -359,12 +359,12 @@ export default function StartupDetails() {
                       <div>
                         <p className="text-sm text-muted-foreground">Website</p>
                         <a
-                          href={startup.website.startsWith("http") ? startup.website : `https://${startup.website}`}
+                          href={startup.website.startsWith("https") ? startup.website : `https://${startup.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-medium hover:text-teal-600 transition-colors"
                         >
-                          {startup.website}
+                          {startup.website.slice(0,20)}....
                         </a>
                       </div>
                     </div>

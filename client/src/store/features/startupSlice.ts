@@ -22,6 +22,7 @@ interface Startup {
     operatingHours: string;
     website: string;
     review?:Reviews[]
+    image?:string
 }
 
 interface Reviews {
@@ -40,10 +41,6 @@ export const fetchStartups = createAsyncThunk('startups/fetchStartups',async() =
     return (await response.data) as Startup[]
 })
 
-export const postStartups = createAsyncThunk('startup/postStartup', async(initialStartup:Startup) => {
-    const response = await axios.post(BASE_URL,initialStartup)
-    return (await response.data) as Startup
-})
 
 export const updateStartup = createAsyncThunk('startups/updateStartup',async(initialStartup:Startup) => {
     const { _id } = initialStartup;
@@ -84,10 +81,6 @@ const startupSlice = createSlice({
         .addCase(fetchStartups.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.error.message ?? 'something went wrong'
-        })
-        .addCase(postStartups.fulfilled, (state,action) => {
-            state.status = 'succeeded'
-            state.startup.push(action.payload);
         })
         .addCase(updateStartup.fulfilled, (state,action) => {
             state.status = 'succeeded';

@@ -1,5 +1,9 @@
 import Startup from "../models/startupModel.js";
 import { startups } from "../data/data.js";
+import fs from "fs"
+import path from "path"
+import { supabase }from "../configs/supabase.js"
+
 
 
 export const getAllStartups = async (req, res) => {
@@ -41,6 +45,36 @@ export const createStartup = async (req, res) => {
       return res.status(401).json({message: "Startup already exist"})
     }
 
+    let imageUrl; 
+
+    if(req.file){
+      const fileBuffer = fs.readFileSync(req.file.path);
+      const fileName = `${name}`
+
+      const {error} = await supabase.storage.from("startup").upload(fileName,fileBuffer, {
+        contentType: req.file.mimetype,
+        upsert: true 
+      })
+
+      if(error){
+        console.log(error)
+        return res.status(500).json({
+          success:false,
+          message:"upload failed",
+          error
+        })
+      }
+
+      const { data:imageDataUrl} = supabase.storage.from("startup").getPublicUrl(fileName,{
+        transform: {
+          width:500,
+          height:500,
+          quality:60
+        }
+      })
+      imageUrl = imageDataUrl.publicUrl
+    }
+
     const newStartup  =  new Startup({
         name,
         description,
@@ -49,7 +83,8 @@ export const createStartup = async (req, res) => {
         contact,
         address,
         operatingHours,
-        website
+        website,
+        image:imageUrl
     })
 
     await newStartup.save();

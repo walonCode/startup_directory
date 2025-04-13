@@ -229,7 +229,7 @@ const CreateStartupForm = (
                   <Label htmlFor="services" className="text-sm font-medium flex items-center">
                     Service Category <span className="text-destructive ml-1">*</span>
                   </Label>
-                  <Select value={services} onValueChange={(e) => setServices(e)}>
+                  <Select value={services} onValueChange={(e) => setServices(e)} >
                     <SelectTrigger
                       id="services"
                       className={`focus-visible:ring-teal-500 ${

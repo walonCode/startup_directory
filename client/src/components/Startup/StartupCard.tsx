@@ -4,12 +4,13 @@ import type React from "react"
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { Building, Mail, Globe, MapPin, Phone, Clock, ExternalLink, Star, ChevronRight, Heart } from "lucide-react"
+import { Mail, Globe, MapPin, Phone, Clock, ExternalLink, Star, ChevronRight, Heart,} from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Separator } from "../ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 export interface Startup {
   _id?: string
@@ -21,6 +22,8 @@ export interface Startup {
   address: string
   website: string
   operatingHours: string
+  image?: string // URL for the company logo
+  coverImage?: string // URL for the company cover image
 }
 
 interface StartupCardProps {
@@ -30,6 +33,7 @@ interface StartupCardProps {
 
 export default function StartupCard({ startup, viewType = "grid" }: StartupCardProps) {
   const [isFavorite, setIsFavorite] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   // Generate random rating for demo purposes
   const rating = (Math.random() * 2 + 3).toFixed(1) // Random rating between 3.0 and 5.0
@@ -56,13 +60,37 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
     setIsFavorite(!isFavorite)
   }
 
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
+  }
+
   if (viewType === "list") {
     return (
       <Card className="overflow-hidden transition-all hover:shadow-lg border-0 shadow-md group">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/4 bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center p-6">
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-transform group-hover:scale-110">
-              <Building className="h-8 w-8 text-white" />
+          <div className="md:w-1/4 relative">
+            {startup.coverImage && !imageError ? (
+              <img
+                src={startup.coverImage}
+                alt={startup.name}
+                className="w-full h-full object-cover absolute inset-0"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-teal-500 to-emerald-600" />
+            )}
+            <div className="relative flex items-center justify-center p-6 min-h-[200px] md:min-h-full">
+              <Avatar className="w-24 h-24 border-4 border-white/20 shadow-xl transition-transform group-hover:scale-110">
+                <AvatarImage src={startup.image} alt={startup.name} />
+                <AvatarFallback className="bg-white/10 text-white text-2xl font-semibold">
+                  {getInitials(startup.name)}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </div>
 
@@ -192,13 +220,28 @@ export default function StartupCard({ startup, viewType = "grid" }: StartupCardP
         </Button>
       </div>
 
-      <div className="h-24 bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center">
-        <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full transition-transform group-hover:scale-110">
-          <Building className="h-6 w-6 text-white" />
+      <div className="h-32 relative">
+        {startup.coverImage && !imageError ? (
+          <img
+            src={startup.coverImage}
+            alt={startup.name}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-teal-500 to-emerald-600" />
+        )}
+        <div className="absolute -bottom-6 left-4">
+          <Avatar className="w-12 h-12 border-2 border-white shadow-lg">
+            <AvatarImage src={startup.image} alt={startup.name} />
+            <AvatarFallback className="bg-teal-100 text-teal-700 font-semibold">
+              {getInitials(startup.name)}
+            </AvatarFallback>
+          </Avatar>
         </div>
       </div>
 
-      <CardHeader className="pb-2 pt-4">
+      <CardHeader className="pb-2 pt-8">
         <div>
           <CardTitle className="group-hover:text-teal-600 transition-colors">{startup.name}</CardTitle>
           <CardDescription className="flex items-center mt-1">

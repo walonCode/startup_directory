@@ -43,6 +43,7 @@ import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Avatar, AvatarFallback } from "../ui/avatar"
+import { AvatarImage } from "@radix-ui/react-avatar"
 
 export default function StartupDetails() {
   const { id } = useParams<{ id: string }>()
@@ -151,6 +152,7 @@ export default function StartupDetails() {
             <CardHeader className="-mt-12 pb-4">
               <div className="flex items-start gap-4">
                 <Avatar className="h-20 w-20 border-4 border-white bg-white shadow-md">
+                  <AvatarImage src={startup.image} alt="Startup Logo" /> 
                   <AvatarFallback className="bg-teal-100 text-teal-700 text-2xl font-bold">
                     {startup.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -475,3 +477,4 @@ export default function StartupDetails() {
     </div>
   )
 }
+

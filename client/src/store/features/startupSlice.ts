@@ -11,7 +11,7 @@ if(import.meta.env.VITE_NODE_ENV === "development"){
     BASE_URL = 'https://startup-directory-server.vercel.app/api/startups'
 }
 
-interface Startup {
+export interface Startup {
     _id?:string;
     name: string;
     description: string;
@@ -39,13 +39,6 @@ interface DeleteStartup {
 export const fetchStartups = createAsyncThunk('startups/fetchStartups',async() => {
     const response = await axios.get(BASE_URL)
     return (await response.data) as Startup[]
-})
-
-
-export const updateStartup = createAsyncThunk('startups/updateStartup',async(initialStartup:Startup) => {
-    const { _id } = initialStartup;
-    const response = await axios.patch(`${BASE_URL}/${_id}`, initialStartup)
-    return (await response.data) as Startup
 })
 
 export const deleteStartup = createAsyncThunk('startup/deletetSartup', async(id:string) => {
@@ -81,10 +74,6 @@ const startupSlice = createSlice({
         .addCase(fetchStartups.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.error.message ?? 'something went wrong'
-        })
-        .addCase(updateStartup.fulfilled, (state,action) => {
-            state.status = 'succeeded';
-            state.startup.push(action.payload)
         })
         .addCase(deleteStartup.fulfilled, (state,action) => {
             state.status = "succeeded";

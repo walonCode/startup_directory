@@ -4,6 +4,7 @@ import type React from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/storeHooks"
 import { selectStartupById } from "../../store/features/startupSlice"
 import { useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { postReview, selectReviewsByStartupId } from "../../store/features/reviewSlice"
 import ReviewCard from "../reviews/ReviewCard"
@@ -21,6 +22,7 @@ import {
   Calendar,
   CheckCircle,
   Users,
+  Pencil
 } from "lucide-react"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
@@ -48,6 +50,7 @@ import { AvatarImage } from "@radix-ui/react-avatar"
 export default function StartupDetails() {
   const { id } = useParams<{ id: string }>()
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   // Fetch startup details
   const startup = useAppSelector((state) => selectStartupById(state, id))
@@ -148,7 +151,12 @@ export default function StartupDetails() {
         {/* Main Content - 2/3 width on medium screens and up */}
         <div className="md:col-span-2 space-y-6">
           <Card className="overflow-hidden border-0 shadow-md">
-            <div className="h-24 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+            <div className="h-24 bg-gradient-to-r from-teal-500 to-emerald-500 flex justify-end items-center">
+              <button className="flex mr-5 items-center gap-1 text-sm text-white" onClick={() => navigate(`/startup/${id}/edit/${id}`) }>
+                <Pencil size={16}/>
+                Edit
+              </button>
+            </div>
             <CardHeader className="-mt-12 pb-4">
               <div className="flex items-start gap-4">
                 <Avatar className="h-20 w-20 border-4 border-white bg-white shadow-md">

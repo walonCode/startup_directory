@@ -18,9 +18,7 @@ import {
   ImageIcon,
 } from "lucide-react"
 import { Button } from "../ui/button"
-import { useAppDispatch } from "../../hooks/storeHooks"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card"
-import { fetchStartups } from "../../store/features/startupSlice"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Label } from "../ui/label"
@@ -28,217 +26,99 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription } from "../ui/alert"
 import { Separator } from "../ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import axios from "axios"
 
 // Define service categories with their display names
 const SERVICE_CATEGORIES = [
-  { value: "CROWD_FUNDING", label: "Crowd Funding" },
+  { value: "Crowd Funding", label: "Crowd Funding" },
   { value: "AI_ML", label: "AI/ML" },
   { value: "AR_VR", label: "AR/VR" },
-  { value: "HEALTHCARE", label: "Healthcare" },
-  { value: "E_COMMERCE", label: "E-Commerce" },
-  { value: "FINTECH", label: "Fintech" },
-  { value: "TECHNOLOGY", label: "Technology" },
-  { value: "FOOD", label: "Food" },
-  { value: "CLOUD_COMPUTING", label: "Cloud Computing" },
-  { value: "CYBER_SECURITY", label: "Cybersecurity" },
-  { value: "BIOTECHNOLOGY", label: "Biotechnology" },
-  { value: "SOFTWARE_DEVELOPMENT", label: "Software Development" },
-  { value: "BLOCKCHAIN", label: "Blockchain" },
-  { value: "HEALTHTECH", label: "Health Tech" },
-  { value: "MEDICAL_DEVICES", label: "Medical Devices" },
-  { value: "MENTAL_HEALTH", label: "Mental Health" },
-  { value: "EDUCATION", label: "Education" },
+  { value: "Healthcare", label: "Healthcare" },
+  { value: "E Commerce", label: "E-Commerce" },
+  { value: "Fintech", label: "Fintech" },
+  { value: "Technology", label: "Technology" },
+  { value: "Food", label: "Food" },
+  { value: "Cloud Computing", label: "Cloud Computing" },
+  { value: "Cyber Security", label: "Cybersecurity" },
+  { value: "Biotechnology", label: "Biotechnology" },
+  { value: "Software Development", label: "Software Development" },
+  { value: "Blockchain", label: "Blockchain" },
+  { value: "Health Tech", label: "Health Tech" },
+  { value: "Medical Devices", label: "Medical Devices" },
+  { value: "Mental Health", label: "Mental Health" },
+  { value: "Education", label: "Education" },
 ]
 
-let BASE_URL
-if (import.meta.env.VITE_NODE_ENV === "development") {
-  BASE_URL = "http://localhost:3000/api/startups"
-} else {
-  BASE_URL = "https://startup-directory-server.vercel.app/api/startups"
-}
 
-const CreateStartup = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    services: "",
-    email: "",
-    contact: "",
-    address: "",
-    operatingHours: "",
-    website: "",
-    logo: null as File | null,
-  })
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
+const CreateStartupForm = (
+  {
+    handleSubmit,  
+    setImage, 
+    imagePreview, 
+    setImagePreview, 
+    name, 
+    services, 
+    contact,
+    address, 
+    email, 
+    website, 
+    description,
+    operatingHours,
+    isSubmitting,
+    success,
+    errors,
+    setWebsite,
+    setOperatingHours,
+    setAddress,
+    setEmail,
+    setServices,
+    setDescription,
+    setName,
+    setContact,
+    handleImageChange,
+    isEdit
+
+  }:
+  {
+    handleSubmit: (e:React.FormEvent<HTMLFormElement | HTMLImageElement>) => void,
+    setImage?: React.Dispatch<React.SetStateAction<File | null>>,
+    imagePreview?: string | null,
+    setImagePreview?: React.Dispatch<React.SetStateAction<string | null>>,
+    name: string,
+    services: string,
+    contact: string,
+    address: string,
+    email: string,
+    website: string,
+    description: string,
+    operatingHours: string,
+    isSubmitting: boolean,
+    success: boolean,
+    errors: Record<string, string>,
+    setWebsite: React.Dispatch<React.SetStateAction<string>>,
+    setOperatingHours: React.Dispatch<React.SetStateAction<string>>,
+    setContact: React.Dispatch<React.SetStateAction<string>>,
+    setAddress: React.Dispatch<React.SetStateAction<string>>,
+    setEmail: React.Dispatch<React.SetStateAction<string>>,
+    setServices: React.Dispatch<React.SetStateAction<string>>,
+    setDescription: React.Dispatch<React.SetStateAction<string>>,
+    setName: React.Dispatch<React.SetStateAction<string>>,
+    handleImageChange?: (e:React.ChangeEvent<HTMLInputElement>) => void,
+    isEdit?:boolean
+
+  }
+) => {
   const [activeTab, setActiveTab] = useState("basic")
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, services: value }))
-
-    // Clear error when user selects a value
-    if (errors.services) {
-      setErrors((prev) => ({ ...prev, services: "" }))
-    }
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Check file type
-    if (!file.type.startsWith("image/")) {
-      setErrors((prev) => ({ ...prev, logo: "Please upload an image file" }))
-      return
-    }
-
-    // Check file size (limit to 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, logo: "Image size should be less than 5MB" }))
-      return
-    }
-
-    // Clear any previous errors
-    if (errors.logo) {
-      setErrors((prev) => ({ ...prev, logo: "" }))
-    }
-
-    // Update form data
-    setFormData((prev) => ({ ...prev, logo: file }))
-
-    // Create preview
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
 
   const removeImage = () => {
-    setFormData((prev) => ({ ...prev, logo: null }))
-    setImagePreview(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
+    setImage!(null)
+    setImagePreview!(null)
   }
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    // Basic validation
-    if (!formData.name.trim()) newErrors.name = "Startup name is required"
-    if (!formData.description.trim()) newErrors.description = "Description is required"
-    if (!formData.services) newErrors.services = "Please select a service category"
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    // Contact validation
-    if (!formData.contact.trim()) {
-      newErrors.contact = "Contact number is required"
-    } else if (!/^[0-9+\-\s()]{7,15}$/.test(formData.contact)) {
-      newErrors.contact = "Please enter a valid phone number"
-    }
-
-    // Address validation
-    if (!formData.address.trim()) newErrors.address = "Address is required"
-
-    // Operating hours validation
-    if (!formData.operatingHours.trim()) newErrors.operatingHours = "Operating hours are required"
-
-    // Website validation
-    if (!formData.website.trim()) {
-      newErrors.website = "Website URL is required"
-    } else if (!/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}([/\w-]*)*\/?$/.test(formData.website)) {
-      newErrors.website = "Please enter a valid website URL"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
-      // If there are validation errors, switch to the tab with the first error
-      const errorFields = Object.keys(errors)
-
-      if (errorFields.some((field) => ["name", "description", "services"].includes(field))) {
-        setActiveTab("basic")
-      } else if (errorFields.some((field) => ["email", "contact", "website"].includes(field))) {
-        setActiveTab("contact")
-      } else if (errorFields.some((field) => ["address", "operatingHours"].includes(field))) {
-        setActiveTab("location")
-      }
-
-      return
-    }
-
-    try {
-      setIsSubmitting(true)
-      // Create FormData object to handle text and file data
-      const submissionData = new FormData();
-      submissionData.append("name", formData.name);
-      submissionData.append("description", formData.description);
-      submissionData.append("services", formData.services);
-      submissionData.append("email", formData.email);
-      submissionData.append("contact", formData.contact);
-      submissionData.append("address", formData.address);
-      submissionData.append("operatingHours", formData.operatingHours);
-      submissionData.append("website", formData.website);
-      if (formData.logo) {
-        submissionData.append("logo", formData.logo);
-      }
-
-      const response = await axios.post(BASE_URL, submissionData)
-      if(response.status === 201) {
-        setSuccess(true)
-        await dispatch(fetchStartups())
-        setFormData({
-          name: "",
-          description: "",
-          services: "",
-          email: "",
-          contact: "",
-          address: "",
-          operatingHours: "",
-          website: "",
-          logo: null,
-        })
-        setImagePreview(null)
-        navigate("/")
-      }
-    
-    } catch (error) {
-      console.error("Failed to create startup:", error)
-      setErrors({ submit: "Failed to create startup. Please try again." })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   const goToNextTab = () => {
     if (activeTab === "basic") setActiveTab("contact")
@@ -268,9 +148,9 @@ const CreateStartup = () => {
             <Building className="h-8 w-8 text-teal-600" />
           </div>
           <div className="mt-8">
-            <CardTitle className="text-3xl font-bold">Create a Startup</CardTitle>
-            <CardDescription className="text-slate-500 mt-2">
-              Fill out the form below to add your startup to our directory
+            <CardTitle className={`${errors.axiosError ? "text-red-500 text-3xl font-bold " : ""} text-3xl font-bold`}>{errors ? errors.axiosError : "Create Startup" }</CardTitle>
+            <CardDescription className="text-slate-500 text-xl font-bold mt-2">
+              {isEdit? "Edit Startup" : "Add your startup to our community"}
             </CardDescription>
           </div>
         </CardHeader>
@@ -317,8 +197,8 @@ const CreateStartup = () => {
                     <Input
                       id="name"
                       name="name"
-                      value={formData.name}
-                      onChange={handleChange}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       placeholder="Enter your startup name"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.name ? "border-destructive focus-visible:ring-destructive" : ""
@@ -335,8 +215,8 @@ const CreateStartup = () => {
                   <Textarea
                     id="description"
                     name="description"
-                    value={formData.description}
-                    onChange={handleChange}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder="Briefly describe your startup and what it does"
                     className={`min-h-[120px] focus-visible:ring-teal-500 ${
                       errors.description ? "border-destructive focus-visible:ring-destructive" : ""
@@ -349,7 +229,7 @@ const CreateStartup = () => {
                   <Label htmlFor="services" className="text-sm font-medium flex items-center">
                     Service Category <span className="text-destructive ml-1">*</span>
                   </Label>
-                  <Select value={formData.services} onValueChange={handleSelectChange}>
+                  <Select value={services} onValueChange={(e) => setServices(e)}>
                     <SelectTrigger
                       id="services"
                       className={`focus-visible:ring-teal-500 ${
@@ -372,7 +252,8 @@ const CreateStartup = () => {
                   {errors.services && <p className="text-destructive text-sm">{errors.services}</p>}
                 </div>
 
-                <div className="space-y-2 mt-4">
+                {isEdit ? "": (
+                  <div className="space-y-2 mt-4">
                   <Label htmlFor="logo" className="text-sm font-medium flex items-center">
                     Startup Logo
                   </Label>
@@ -414,12 +295,13 @@ const CreateStartup = () => {
                       name="logo"
                       type="file"
                       accept="image/*"
-                      onChange={handleImageUpload}
+                      onChange={handleImageChange}
                       className="hidden"
                     />
                     {errors.logo && <p className="text-destructive text-sm">{errors.logo}</p>}
                   </div>
                 </div>
+                )}
 
                 <div className="flex justify-end pt-4">
                   <Button
@@ -443,8 +325,8 @@ const CreateStartup = () => {
                       id="email"
                       name="email"
                       type="email"
-                      value={formData.email}
-                      onChange={handleChange}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your business email"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.email ? "border-destructive focus-visible:ring-destructive" : ""
@@ -463,8 +345,8 @@ const CreateStartup = () => {
                     <Input
                       id="contact"
                       name="contact"
-                      value={formData.contact}
-                      onChange={handleChange}
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
                       placeholder="Enter your contact number"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.contact ? "border-destructive focus-visible:ring-destructive" : ""
@@ -483,8 +365,8 @@ const CreateStartup = () => {
                     <Input
                       id="website"
                       name="website"
-                      value={formData.website}
-                      onChange={handleChange}
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
                       placeholder="Enter your website URL"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.website ? "border-destructive focus-visible:ring-destructive" : ""
@@ -523,8 +405,8 @@ const CreateStartup = () => {
                     <Input
                       id="address"
                       name="address"
-                      value={formData.address}
-                      onChange={handleChange}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                       placeholder="Enter your business address"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.address ? "border-destructive focus-visible:ring-destructive" : ""
@@ -543,8 +425,8 @@ const CreateStartup = () => {
                     <Input
                       id="operatingHours"
                       name="operatingHours"
-                      value={formData.operatingHours}
-                      onChange={handleChange}
+                      value={operatingHours}
+                      onChange={(e) => setOperatingHours(e.target.value)}
                       placeholder="e.g. Mon-Fri: 9 AM - 5 PM"
                       className={`pl-10 focus-visible:ring-teal-500 ${
                         errors.operatingHours ? "border-destructive focus-visible:ring-destructive" : ""
@@ -587,7 +469,9 @@ const CreateStartup = () => {
                         Creating...
                       </>
                     ) : (
-                      "Create Startup"
+                      <p>
+                        {isEdit ? "Update Startup" : "Create Startup"}
+                      </p>
                     )}
                   </Button>
                 </div>
@@ -608,4 +492,4 @@ const CreateStartup = () => {
   )
 }
 
-export default CreateStartup
+export default CreateStartupForm

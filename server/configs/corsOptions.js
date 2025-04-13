@@ -9,7 +9,7 @@ export const corsOptions = {
             callback(new Error(`Not Allowed by CORS`))
         }
     },
-    methods: ["POST","GET","PUT","DELETE"],
+    methods: ["POST","GET","PUT","DELETE","PATCH"],
     allowedHeaders : [
         'Content-Type',
         'Set-Cookie',

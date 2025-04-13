@@ -1,8 +1,9 @@
 import { Route,Routes } from "react-router-dom"
 import Layout from "./components/Layout"
-import CreateStartup from "./components/forms/CreateStartup"
 import ViewList from "./components/Startup/ViewList"
 import StartupDetails from "./components/Startup/StartupDetails"
+import CreateStartupPage from "./components/Startup/CreateStartupPage"
+import EditStartupPage from "./components/Startup/EditStartupPage"
 
 export default function App(){
   return(
@@ -12,8 +13,9 @@ export default function App(){
 
 
       <Route path='startup'>
-        <Route index element={<CreateStartup/>}/>
+        <Route index element={<CreateStartupPage/>}/>
         <Route path=':id' element={<StartupDetails/>}/>
+        <Route path=":id/edit/:id" element={<EditStartupPage/>}/>
       </Route>
 
       </Route>
